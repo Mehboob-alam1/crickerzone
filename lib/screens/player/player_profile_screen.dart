@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/player_provider.dart';
 import '../../core/constants/colors.dart';
-import 'dart:ui';
 
 class PlayerProfileScreen extends StatefulWidget {
   final String playerId;

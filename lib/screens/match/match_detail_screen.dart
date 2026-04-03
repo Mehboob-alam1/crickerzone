@@ -1,117 +1,117 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/constants/colors.dart';
 import '../../providers/match_provider.dart';
 import '../../models/match_model.dart';
-import 'dart:ui';
+import '../../widgets/win_prediction.dart';
+import '../../widgets/overs_timeline.dart';
 
-class MatchDetailScreen extends StatelessWidget {
+class MatchDetailScreen extends StatefulWidget {
   final String matchId;
-
   const MatchDetailScreen({super.key, required this.matchId});
+
+  @override
+  State<MatchDetailScreen> createState() => _MatchDetailScreenState();
+}
+
+class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTickerProviderStateMixin {
+  late TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: 3, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
     final match = context.watch<MatchProvider>().matches.firstWhere(
-      (m) => m.id == matchId,
+      (m) => m.id == widget.matchId,
       orElse: () => context.read<MatchProvider>().matches.first,
     );
 
-    return DefaultTabController(
-      length: 4,
-      child: Scaffold(
-        appBar: AppBar(
-          backgroundColor: AppColors.surface,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('${match.teamA} vs ${match.teamB}', 
-                style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-              Text(match.series, 
-                style: const TextStyle(fontSize: 10, color: AppColors.primary, fontWeight: FontWeight.normal)),
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leadingWidth: 80,
+        leading: InkWell(
+          onTap: () => Navigator.pop(context),
+          child: Row(
+            children: const [
+              SizedBox(width: 8),
+              Icon(Icons.arrow_back_ios_new, color: Colors.red, size: 20),
+              Text('Back', style: TextStyle(color: Colors.red, fontSize: 16)),
             ],
           ),
-          actions: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.notifications_none)),
-            IconButton(onPressed: () {}, icon: const Icon(Icons.share_outlined)),
-          ],
         ),
-        body: Column(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildMatchHeader(match),
-            Container(
-              color: AppColors.surface,
-              child: const TabBar(
-                isScrollable: true,
-                tabAlignment: TabAlignment.start,
-                indicatorColor: AppColors.primary,
-                indicatorWeight: 3,
-                labelColor: AppColors.primary,
-                unselectedLabelColor: AppColors.textMuted,
-                tabs: [
-                  Tab(text: 'INFO'),
-                  Tab(text: 'LIVE'),
-                  Tab(text: 'SCORECARD'),
-                  Tab(text: 'SQUADS'),
-                ],
-              ),
+            Column(
+              children: [
+                const Text('IND', style: TextStyle(color: Colors.black54, fontSize: 10, fontWeight: FontWeight.bold)),
+                const Text('213', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16)),
+                const Text('49.1', style: TextStyle(color: Colors.black45, fontSize: 10)),
+              ],
             ),
-            Expanded(
-              child: TabBarView(
-                children: [
-                  _buildInfoTab(match),
-                  _buildLiveTab(match),
-                  _buildScorecardTab(match),
-                  _buildSquadsTab(match),
-                ],
-              ),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 12),
+              child: Text('vs', style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold, fontSize: 12)),
+            ),
+            Column(
+              children: [
+                const Text('SL', style: TextStyle(color: Colors.black54, fontSize: 10, fontWeight: FontWeight.bold)),
+                const Text('107/6', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16)),
+                const Text('26.4', style: TextStyle(color: Colors.black45, fontSize: 10)),
+              ],
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildMatchHeader(MatchModel match) {
-    return Container(
-      padding: const EdgeInsets.fromLTRB(20, 10, 20, 24),
-      decoration: const BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(24),
-          bottomRight: Radius.circular(24),
-        ),
-      ),
-      child: Column(
-        children: [
-          Text(match.venue, style: const TextStyle(color: AppColors.textMuted, fontSize: 11)),
-          const SizedBox(height: 20),
-          Row(
-            children: [
-              Expanded(child: _buildHeaderTeam(match.teamA, match.teamALogo, match.scoreA, match.oversA, true)),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: const Text('VS', style: TextStyle(color: AppColors.textMuted, fontWeight: FontWeight.bold, fontSize: 12)),
-              ),
-              Expanded(child: _buildHeaderTeam(match.teamB, match.teamBLogo, match.scoreB, match.oversB, false)),
-            ],
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.notifications_none, color: Colors.black54),
+            onPressed: () {},
           ),
-          const SizedBox(height: 24),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Text(
-              match.status,
-              style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 13),
-              textAlign: TextAlign.center,
+        ],
+      ),
+      body: Column(
+        children: [
+          _buildTopTabs(),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildLiveStatsRow(),
+                  _buildStatusMessage(),
+                  const WinPredictionWidget(
+                    teamA: 'IND',
+                    teamB: 'SL',
+                    percentageA: 83,
+                    percentageB: 17,
+                  ),
+                  const OversTimelineWidget(
+                    currentOver: 'OVER 26.4',
+                    bowlerName: 'K Yadav',
+                    balls: ['1', '1', '1', '0'],
+                    lastOver: 'OVER 25',
+                    lastBowlerName: 'H Pandya',
+                  ),
+                  _buildBowlerTable(),
+                  _buildOnCreaseSection(),
+                  _buildLargeScoreDisplay(),
+                  _buildMatchInformation(match),
+                ],
+              ),
             ),
           ),
         ],
@@ -119,277 +119,257 @@ class MatchDetailScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeaderTeam(String name, String logo, String score, String overs, bool isLeft) {
-    return Column(
-      crossAxisAlignment: isLeft ? CrossAxisAlignment.start : CrossAxisAlignment.end,
-      children: [
-        CachedNetworkImage(
-          imageUrl: logo,
-          width: 48,
-          height: 48,
-          errorWidget: (context, url, error) => const Icon(Icons.flag, size: 40),
-        ),
-        const SizedBox(height: 12),
-        Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
-        const SizedBox(height: 4),
-        Text(score == '-' ? 'Yet to bat' : score, 
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16, fontFeatures: [FontFeature.tabularFigures()])),
-        if (overs != '-' && overs.isNotEmpty)
-          Text('($overs ov)', style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
-      ],
-    );
-  }
-
-  Widget _buildInfoTab(MatchModel match) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        _buildDetailCard('Match Details', {
-          'Match': '${match.teamA} vs ${match.teamB}, ${match.series}',
-          'Date': 'Oct 25, 2024',
-          'Time': match.time,
-          'Venue': match.venue,
-          'Toss': '${match.teamA} won the toss and elected to bat',
-        }),
-        const SizedBox(height: 16),
-        _buildDetailCard('Venue Guide', {
-          'Stadium': match.venue,
-          'City': 'Dubai',
-          'Capacity': '25,000',
-          'Ends': 'Emirates End, Paddock End',
-        }),
-      ],
-    );
-  }
-
-  Widget _buildLiveTab(MatchModel match) {
-    if (match.matchType != 'Live') {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.timer_outlined, size: 64, color: Colors.white.withValues(alpha: 0.1)),
-            const SizedBox(height: 16),
-            const Text('Match starts at 7:30 PM', style: TextStyle(color: AppColors.textMuted)),
-          ],
-        ),
-      );
-    }
-    return ListView.builder(
-      padding: const EdgeInsets.all(16),
-      itemCount: 8,
-      itemBuilder: (context, index) {
-        final over = 15 - (index ~/ 6);
-        final ball = 6 - (index % 6);
-        return Padding(
-          padding: const EdgeInsets.only(bottom: 16.0),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Column(
-                children: [
-                  Text('$over.$ball', style: const TextStyle(fontWeight: FontWeight.bold, color: AppColors.primary)),
-                  Container(width: 1, height: 40, color: Colors.white10),
-                ],
-              ),
-              const SizedBox(width: 16),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Text('Shaheen Afridi to Miller, ', style: TextStyle(fontWeight: FontWeight.w600)),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                          decoration: BoxDecoration(color: index % 3 == 0 ? AppColors.primary : Colors.white10, borderRadius: BorderRadius.circular(4)),
-                          child: Text(index % 3 == 0 ? '4' : '1', style: TextStyle(color: index % 3 == 0 ? Colors.black : Colors.white, fontWeight: FontWeight.bold, fontSize: 10)),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    const Text('Full length delivery, driven beautifully through the covers for a boundary.', style: TextStyle(color: AppColors.textSecondary, fontSize: 13)),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildScorecardTab(MatchModel match) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        _buildBattingScoreTable(match.teamA, match.scoreA, match.oversA),
-        const SizedBox(height: 24),
-        _buildBowlingScoreTable(match.teamB),
-        const SizedBox(height: 32),
-        _buildBattingScoreTable(match.teamB, match.scoreB, match.oversB),
-        const SizedBox(height: 24),
-        _buildBowlingScoreTable(match.teamA),
-      ],
-    );
-  }
-
-  Widget _buildBattingScoreTable(String team, String score, String overs) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-          decoration: BoxDecoration(
-            color: AppColors.primary.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(team, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.primary)),
-              Text('$score ($overs)', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
-            ],
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-          child: Row(
-            children: [
-              Expanded(flex: 4, child: Text('BATTING', style: TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.bold))),
-              Expanded(child: Text('R', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.bold))),
-              Expanded(child: Text('B', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.bold))),
-              Expanded(child: Text('4s', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.bold))),
-              Expanded(child: Text('6s', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.bold))),
-            ],
-          ),
-        ),
-        _buildPlayerScoreRow('Babar Azam', 'c Miller b Rabada', '74', '52', '8', '2'),
-        _buildPlayerScoreRow('Mohammad Rizwan', 'lbw b Maharaj', '45', '38', '4', '0'),
-        _buildPlayerScoreRow('Fakhar Zaman', 'not out', '32', '20', '3', '1'),
-        const Divider(color: Colors.white10),
-      ],
-    );
-  }
-
-  Widget _buildBowlingScoreTable(String team) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 4),
-          child: Text('BOWLING ($team)', style: const TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.bold)),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(vertical: 8, horizontal: 4),
-          child: Row(
-            children: [
-              Expanded(flex: 4, child: SizedBox()),
-              Expanded(child: Text('O', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.bold))),
-              Expanded(child: Text('M', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.bold))),
-              Expanded(child: Text('R', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.bold))),
-              Expanded(child: Text('W', textAlign: TextAlign.center, style: TextStyle(fontSize: 10, color: AppColors.textMuted, fontWeight: FontWeight.bold))),
-            ],
-          ),
-        ),
-        _buildBowlingRow('Shaheen Afridi', '4.0', '0', '28', '2'),
-        _buildBowlingRow('Haris Rauf', '4.0', '0', '35', '1'),
-        _buildBowlingRow('Shadab Khan', '4.0', '1', '22', '0'),
-      ],
-    );
-  }
-
-  Widget _buildPlayerScoreRow(String name, String dismissal, String runs, String balls, String fours, String sixes) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4),
+  Widget _buildTopTabs() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Expanded(
-            flex: 4,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(name, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13)),
-                Text(dismissal, style: const TextStyle(color: AppColors.textMuted, fontSize: 10)),
+          _buildTab('LIVE', true),
+          _buildTab('SCORECARD', false),
+          _buildTab('COMMENTARY', false),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTab(String label, bool isSelected) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      decoration: BoxDecoration(
+        color: isSelected ? Colors.black : Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        label,
+        style: TextStyle(
+          color: isSelected ? Colors.white : Colors.black45,
+          fontWeight: FontWeight.bold,
+          fontSize: 12,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLiveStatsRow() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _buildStatItem('CRR', '4.00'),
+          _buildStatItem('RRR', '4.61'),
+          _buildStatItem('Target', '214'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(String label, String value) {
+    return Column(
+      children: [
+        Text(label, style: const TextStyle(color: Colors.black54, fontSize: 11)),
+        const SizedBox(height: 4),
+        Text(value, style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 16)),
+      ],
+    );
+  }
+
+  Widget _buildStatusMessage() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+      child: const Text(
+        'Sri Lanka needs 106 run in 138 balls to win',
+        style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.w500),
+      ),
+    );
+  }
+
+  Widget _buildBowlerTable() {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey[200]!))),
+            child: Row(
+              children: const [
+                Expanded(flex: 3, child: Text('Bowler', style: TextStyle(color: Colors.black45, fontSize: 11))),
+                Expanded(flex: 2, child: Text('Wkt-Runs', textAlign: TextAlign.center, style: TextStyle(color: Colors.black45, fontSize: 11))),
+                Expanded(child: Text('Overs', textAlign: TextAlign.center, style: TextStyle(color: Colors.black45, fontSize: 11))),
+                Expanded(child: Text('Econ', textAlign: TextAlign.center, style: TextStyle(color: Colors.black45, fontSize: 11))),
               ],
             ),
           ),
-          Expanded(child: Text(runs, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
-          Expanded(child: Text(balls, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textMuted, fontSize: 12))),
-          Expanded(child: Text(fours, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textMuted, fontSize: 12))),
-          Expanded(child: Text(sixes, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textMuted, fontSize: 12))),
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Row(
+              children: const [
+                Expanded(flex: 3, child: Text('K Yadav', style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.w500))),
+                Expanded(flex: 2, child: Text('0-2', textAlign: TextAlign.center, style: TextStyle(color: Colors.black, fontSize: 12))),
+                Expanded(child: Text('1.4', textAlign: TextAlign.center, style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold))),
+                Expanded(child: Text('1.71', textAlign: TextAlign.center, style: TextStyle(color: Colors.black, fontSize: 12))),
+              ],
+            ),
+          ),
+          const Divider(height: 32),
         ],
       ),
     );
   }
 
-  Widget _buildBowlingRow(String name, String overs, String maidens, String runs, String wickets) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4),
-      child: Row(
-        children: [
-          Expanded(flex: 4, child: Text(name, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13))),
-          Expanded(child: Text(overs, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12))),
-          Expanded(child: Text(maidens, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12))),
-          Expanded(child: Text(runs, textAlign: TextAlign.center, style: const TextStyle(fontSize: 12))),
-          Expanded(child: Text(wickets, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.primary))),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildSquadsTab(MatchModel match) {
-    return ListView(
-      padding: const EdgeInsets.all(16),
-      children: [
-        _buildSquadList(match.teamA, ['Babar Azam (c)', 'Mohammad Rizwan (wk)', 'Fakhar Zaman', 'Saim Ayub', 'Iftikhar Ahmed', 'Shadab Khan', 'Shaheen Afridi']),
-        const SizedBox(height: 24),
-        _buildSquadList(match.teamB, ['Aiden Markram (c)', 'Quinton de Kock (wk)', 'David Miller', 'Heinrich Klaasen', 'Kagiso Rabada', 'Keshav Maharaj', 'Lungi Ngidi']),
-      ],
-    );
-  }
-
-  Widget _buildSquadList(String teamName, List<String> players) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(teamName, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 18)),
-        const SizedBox(height: 12),
-        ...players.map((p) => ListTile(
-          contentPadding: EdgeInsets.zero,
-          leading: CircleAvatar(backgroundColor: Colors.white.withValues(alpha: 0.05), radius: 18, child: const Icon(Icons.person, size: 20, color: AppColors.textMuted)),
-          title: Text(p, style: const TextStyle(fontSize: 14)),
-          trailing: Text(p.contains('(c)') ? 'Captain' : p.contains('(wk)') ? 'Wicketkeeper' : 'Player', style: const TextStyle(fontSize: 11, color: AppColors.textMuted)),
-        )),
-      ],
-    );
-  }
-
-  Widget _buildDetailCard(String title, Map<String, String> details) {
+  Widget _buildOnCreaseSection() {
     return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
-      ),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(title, style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: AppColors.primary)),
-          const Divider(height: 24, color: Colors.white10),
-          ...details.entries.map((e) => Padding(
-            padding: const EdgeInsets.symmetric(vertical: 6.0),
+          const Text('On Crease - Partnership: 26 (31)', style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          Container(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.grey[200]!))),
             child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SizedBox(width: 80, child: Text(e.key, style: const TextStyle(color: AppColors.textMuted, fontSize: 12))),
-                Expanded(child: Text(e.value, style: const TextStyle(fontSize: 12, height: 1.4))),
+              children: const [
+                Expanded(flex: 3, child: Text('Batter', style: TextStyle(color: Colors.black45, fontSize: 11))),
+                Expanded(flex: 2, child: Text('Run (Ball)', textAlign: TextAlign.center, style: TextStyle(color: Colors.black45, fontSize: 11))),
+                Expanded(child: Text('4s', textAlign: TextAlign.center, style: TextStyle(color: Colors.black45, fontSize: 11))),
+                Expanded(child: Text('6s', textAlign: TextAlign.center, style: TextStyle(color: Colors.black45, fontSize: 11))),
+                Expanded(child: Text('Strike', textAlign: TextAlign.center, style: TextStyle(color: Colors.black45, fontSize: 11))),
               ],
             ),
-          )),
+          ),
+          _buildBatterRow('D Silva*', '30 (44)', '4', '0', '68.18', isTarget: true),
+          _buildBatterRow('D Wellalage', '8 (14)', '0', '0', '57.14'),
+          const Divider(height: 32),
         ],
       ),
+    );
+  }
+
+  Widget _buildBatterRow(String name, String runs, String fours, String sixes, String strike, {bool isTarget = false}) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 12),
+      child: Row(
+        children: [
+          Expanded(flex: 3, child: Text(name, style: TextStyle(color: isTarget ? Colors.red : Colors.black, fontSize: 12, fontWeight: FontWeight.w500))),
+          Expanded(flex: 2, child: Text(runs, textAlign: TextAlign.center, style: const TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold))),
+          Expanded(child: Text(fours, textAlign: TextAlign.center, style: const TextStyle(color: Colors.black, fontSize: 12))),
+          Expanded(child: Text(sixes, textAlign: TextAlign.center, style: const TextStyle(color: Colors.black, fontSize: 12))),
+          Expanded(child: Text(strike, textAlign: TextAlign.center, style: const TextStyle(color: Colors.black, fontSize: 12))),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLargeScoreDisplay() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('At 26.4 Overs', style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              _buildSmallTeamLogo('IND', 'https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313100/313128.logo.png'),
+              const Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24),
+                child: Text('132-4  -  107-6', style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+              ),
+              _buildSmallTeamLogo('SL', 'https://img1.hscicdn.com/image/upload/f_auto,t_ds_square_w_160,q_50/lsci/db/PICTURES/CMS/313100/313139.logo.png'),
+            ],
+          ),
+          const Divider(height: 48),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSmallTeamLogo(String name, String logo) {
+    return Column(
+      children: [
+        CachedNetworkImage(imageUrl: logo, width: 32, height: 32),
+        const SizedBox(height: 4),
+        Text(name, style: const TextStyle(color: Colors.black54, fontSize: 11, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+
+  Widget _buildMatchInformation(MatchModel match) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Match Information', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13)),
+          const SizedBox(height: 16),
+          _buildInfoRow('Toss', 'India, elected to bat first'),
+          _buildInfoRow('Series', 'Asia Cup'),
+          _buildInfoRow('Season', '2023'),
+          _buildInfoRow('Match Number', 'ODI no. 4641'),
+          _buildInfoRow('Hours of Days', '15.00 start, First Session\n15.00-18.30, Interval 18.30-19.10,\nSecond Session 19.10-22.40'),
+          _buildInfoRow('Match Days', '12 September 2023 - daynight (50-over match)'),
+          _buildUmpireRow('Umpires', 'Masudur Rahman', 'Richard Illingworth'),
+          _buildInfoRow('TV Umpire', 'Paul Wilson'),
+          _buildInfoRow('Reserve Umpire', 'Asif Yaqoob'),
+          _buildInfoRow('Match Referee', 'Javagal Srinath'),
+          const SizedBox(height: 40),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(flex: 2, child: Text(label, style: const TextStyle(fontSize: 12, color: Colors.black54))),
+          Expanded(flex: 3, child: Text(value, style: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.w500))),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUmpireRow(String label, String u1, String u2) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Expanded(flex: 2, child: Text(label, style: const TextStyle(fontSize: 12, color: Colors.black54))),
+          Expanded(
+            flex: 3,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildUmpireItem(u1),
+                const SizedBox(height: 4),
+                _buildUmpireItem(u2),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildUmpireItem(String name) {
+    return Row(
+      children: [
+        Text(name, style: const TextStyle(fontSize: 12, color: Colors.black, fontWeight: FontWeight.w500)),
+        const Spacer(),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
+          decoration: BoxDecoration(color: Colors.blue[400], borderRadius: BorderRadius.circular(4)),
+          child: const Text('DRS', style: TextStyle(color: Colors.white, fontSize: 8, fontWeight: FontWeight.bold)),
+        ),
+      ],
     );
   }
 }

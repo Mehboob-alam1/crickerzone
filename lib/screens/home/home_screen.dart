@@ -8,6 +8,7 @@ import '../../widgets/section_header.dart';
 import '../../widgets/category_item.dart';
 import '../../widgets/drawer_item.dart';
 import '../player/players_list_screen.dart';
+import '../team/teams_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Future<void> _loadData() async {
+    // Small delay to ensure context is available and avoid calling during build
     await Future.delayed(Duration.zero);
     if (mounted) {
       context.read<MatchProvider>().fetchMatches();
@@ -41,14 +43,14 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Row(
               children: [
                 IconButton(
-                  onPressed: () {}, 
+                  onPressed: () {},
                   icon: const Icon(Icons.search_rounded),
                   tooltip: 'Search matches',
                 ),
                 Stack(
                   children: [
                     IconButton(
-                      onPressed: () {}, 
+                      onPressed: () {},
                       icon: const Icon(Icons.notifications_none_rounded),
                     ),
                     Positioned(
@@ -74,7 +76,12 @@ class _HomeScreenState extends State<HomeScreen> {
       body: Consumer<MatchProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.matches.isEmpty) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+            return const Center(
+              child: CircularProgressIndicator(
+                color: AppColors.primary,
+                strokeWidth: 3,
+              ),
+            );
           }
 
           return RefreshIndicator(
@@ -82,7 +89,33 @@ class _HomeScreenState extends State<HomeScreen> {
             color: AppColors.primary,
             backgroundColor: AppColors.surface,
             child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(
+                parent: BouncingScrollPhysics(),
+              ),
               slivers: [
+                // Search Bar in body for better accessibility
+                SliverPadding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  sliver: SliverToBoxAdapter(
+                    child: FadeInDown(
+                      duration: const Duration(milliseconds: 400),
+                      child: TextField(
+                        decoration: InputDecoration(
+                          hintText: 'Search for series, teams or players...',
+                          prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
+                          filled: true,
+                          fillColor: AppColors.surface,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            borderSide: BorderSide.none,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+
                 SliverToBoxAdapter(
                   child: FadeInDown(
                     duration: const Duration(milliseconds: 500),
@@ -161,7 +194,7 @@ class _HomeScreenState extends State<HomeScreen> {
               image: DecorationImage(
                 image: NetworkImage('https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=500&auto=format&fit=crop&q=60'),
                 fit: BoxFit.cover,
-                opacity: 0.2,
+                opacity: 0.15,
               ),
             ),
             child: Center(
@@ -183,48 +216,51 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
           DrawerItem(
-            icon: Icons.home_rounded, 
-            title: 'Home', 
-            isSelected: true, 
+            icon: Icons.home_rounded,
+            title: 'Home',
+            isSelected: true,
             onTap: () => Navigator.pop(context),
           ),
           DrawerItem(
-            icon: Icons.emoji_events_rounded, 
-            title: 'Series', 
+            icon: Icons.emoji_events_rounded,
+            title: 'Series',
             onTap: () => Navigator.pop(context),
           ),
           DrawerItem(
-            icon: Icons.group_rounded, 
-            title: 'Teams', 
-            onTap: () => Navigator.pop(context),
+            icon: Icons.group_rounded,
+            title: 'Teams',
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => const TeamsScreen()));
+            },
           ),
           DrawerItem(
-            icon: Icons.person_rounded, 
-            title: 'Players', 
+            icon: Icons.person_rounded,
+            title: 'Players',
             onTap: () {
               Navigator.pop(context);
               Navigator.push(context, MaterialPageRoute(builder: (context) => const PlayersListScreen()));
             },
           ),
           DrawerItem(
-            icon: Icons.leaderboard_rounded, 
-            title: 'Rankings', 
+            icon: Icons.leaderboard_rounded,
+            title: 'Rankings',
             onTap: () => Navigator.pop(context),
           ),
           DrawerItem(
-            icon: Icons.newspaper_rounded, 
-            title: 'News', 
+            icon: Icons.newspaper_rounded,
+            title: 'News',
             onTap: () => Navigator.pop(context),
           ),
           const Divider(color: Colors.white10, height: 32),
           DrawerItem(
-            icon: Icons.settings_rounded, 
-            title: 'Settings', 
+            icon: Icons.settings_rounded,
+            title: 'Settings',
             onTap: () => Navigator.pop(context),
           ),
           DrawerItem(
-            icon: Icons.info_outline_rounded, 
-            title: 'About Us', 
+            icon: Icons.info_outline_rounded,
+            title: 'About Us',
             onTap: () => Navigator.pop(context),
           ),
         ],
@@ -239,13 +275,15 @@ class _HomeScreenState extends State<HomeScreen> {
       {'name': 'Rankings', 'icon': Icons.leaderboard_rounded, 'color': Colors.orange},
       {'name': 'Series', 'icon': Icons.emoji_events_rounded, 'color': AppColors.primary},
       {'name': 'Teams', 'icon': Icons.group_rounded, 'color': Colors.purple},
+      {'name': 'Players', 'icon': Icons.person_rounded, 'color': Colors.teal},
     ];
 
     return SizedBox(
-      height: 120,
+      height: 130,
       child: ListView.builder(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
         scrollDirection: Axis.horizontal,
+        physics: const BouncingScrollPhysics(),
         itemCount: categories.length,
         itemBuilder: (context, index) {
           final cat = categories[index];
@@ -254,7 +292,13 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: cat['icon'] as IconData,
             color: cat['color'] as Color,
             index: index,
-            onTap: () {},
+            onTap: () {
+              if (cat['name'] == 'Teams') {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const TeamsScreen()));
+              } else if (cat['name'] == 'Players') {
+                Navigator.push(context, MaterialPageRoute(builder: (context) => const PlayersListScreen()));
+              }
+            },
           );
         },
       ),
@@ -263,10 +307,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildLiveMatchesList(MatchProvider provider) {
     return SizedBox(
-      height: 200,
+      height: 220,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
+        physics: const BouncingScrollPhysics(),
         itemCount: provider.liveMatches.length,
         itemBuilder: (context, index) => FadeInRight(
           delay: Duration(milliseconds: 200 * index),

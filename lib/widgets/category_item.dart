@@ -25,8 +25,10 @@ class CategoryItem extends StatelessWidget {
       child: GestureDetector(
         onTap: onTap,
         child: Container(
-          margin: const EdgeInsets.only(right: 20),
+          width: 70, // Added fixed width to help with text alignment and bounds
+          margin: const EdgeInsets.only(right: 12),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Container(
                 width: 56,
@@ -47,7 +49,10 @@ class CategoryItem extends StatelessWidget {
               const SizedBox(height: 8),
               Text(
                 name,
-                style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w500),
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
               ),
             ],
           ),

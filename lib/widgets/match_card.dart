@@ -15,6 +15,9 @@ class MatchCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: isLive ? 320 : double.infinity,
+      // For live matches in a horizontal list, we set a fixed height to ensure uniformity
+      // and allow the use of Spacer() inside the Column.
+      height: isLive ? 220 : null,
       margin: EdgeInsets.only(
         right: isLive ? 12 : 0,
         bottom: isLive ? 0 : 12,
@@ -25,6 +28,7 @@ class MatchCard extends StatelessWidget {
         child: Card(
           elevation: 0,
           color: AppColors.surface,
+          margin: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
             side: BorderSide(
@@ -35,6 +39,8 @@ class MatchCard extends StatelessWidget {
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
+              // In horizontal list (isLive), we want the Column to fill the card height
+              mainAxisSize: isLive ? MainAxisSize.max : MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Row(
@@ -71,8 +77,13 @@ class MatchCard extends StatelessWidget {
                 _buildTeamRow(match.teamA, match.teamALogo, match.scoreA, match.oversA),
                 const SizedBox(height: 12),
                 _buildTeamRow(match.teamB, match.teamBLogo, match.scoreB, match.oversB),
-                const Spacer(),
-                const Divider(height: 24, color: Colors.white10),
+                
+                // Use Spacer for live matches to push the status to the bottom
+                // In vertical lists, we use fixed spacing to avoid layout errors
+                if (isLive) const Spacer() else const SizedBox(height: 16),
+
+                const Divider(height: 1, color: Colors.white10),
+                const SizedBox(height: 12),
                 Row(
                   children: [
                     Expanded(
@@ -116,9 +127,12 @@ class MatchCard extends StatelessWidget {
         Expanded(
           child: Text(
             name,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
             style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
           ),
         ),
+        const SizedBox(width: 8),
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
