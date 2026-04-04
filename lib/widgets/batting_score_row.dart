@@ -8,6 +8,8 @@ class BattingScoreRow extends StatelessWidget {
   final String balls;
   final String fours;
   final String sixes;
+  final String strikeRate;
+  final bool isNotOut;
 
   const BattingScoreRow({
     super.key,
@@ -17,12 +19,14 @@ class BattingScoreRow extends StatelessWidget {
     required this.balls,
     required this.fours,
     required this.sixes,
+    required this.strikeRate,
+    this.isNotOut = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6.0, horizontal: 4),
+      padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4),
       child: Row(
         children: [
           Expanded(
@@ -30,16 +34,43 @@ class BattingScoreRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(name, style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 13)),
-                Text(dismissal, style: const TextStyle(color: AppColors.textMuted, fontSize: 10)),
+                Text(
+                  name + (isNotOut ? '*' : ''),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                    color: isNotOut ? AppColors.primary : AppColors.textPrimary,
+                  ),
+                ),
+                Text(
+                  dismissal,
+                  style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
               ],
             ),
           ),
-          Expanded(child: Text(runs, textAlign: TextAlign.center, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 13))),
-          Expanded(child: Text(balls, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textMuted, fontSize: 12))),
-          Expanded(child: Text(fours, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textMuted, fontSize: 12))),
-          Expanded(child: Text(sixes, textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textMuted, fontSize: 12))),
+          _buildCell(runs, isBold: true),
+          _buildCell(balls, isMuted: true),
+          _buildCell(fours, isMuted: true),
+          _buildCell(sixes, isMuted: true),
+          _buildCell(strikeRate, isMuted: true),
         ],
+      ),
+    );
+  }
+
+  Widget _buildCell(String text, {bool isBold = false, bool isMuted = false}) {
+    return Expanded(
+      child: Text(
+        text,
+        textAlign: TextAlign.center,
+        style: TextStyle(
+          fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
+          fontSize: isBold ? 13 : 12,
+          color: isMuted ? AppColors.textMuted : AppColors.textPrimary,
+        ),
       ),
     );
   }

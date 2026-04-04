@@ -65,6 +65,7 @@ class AppTheme {
       tabBarTheme: const TabBarThemeData(
         labelColor: AppColors.primary,
         unselectedLabelColor: AppColors.textMuted,
+        indicatorColor: AppColors.primary,
         indicatorSize: TabBarIndicatorSize.label,
         labelStyle: TextStyle(fontWeight: FontWeight.bold, fontSize: 14),
         unselectedLabelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 14),
@@ -75,6 +76,10 @@ class AppTheme {
         unselectedItemColor: AppColors.textMuted,
         type: BottomNavigationBarType.fixed,
         elevation: 10,
+      ),
+      dividerTheme: const DividerThemeData(
+        color: Colors.white12,
+        thickness: 1,
       ),
     );
   }

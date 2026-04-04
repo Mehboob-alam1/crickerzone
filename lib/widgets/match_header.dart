@@ -30,7 +30,7 @@ class MatchHeader extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                 decoration: BoxDecoration(
-                  color: Colors.white.withValues(alpha: 0.05),
+                  color: AppColors.textPrimary.withOpacity(0.05),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 child: const Text('VS', style: TextStyle(color: AppColors.textMuted, fontWeight: FontWeight.bold, fontSize: 12)),
@@ -42,7 +42,7 @@ class MatchHeader extends StatelessWidget {
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
+              color: AppColors.primary.withOpacity(0.1),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Text(
@@ -64,13 +64,13 @@ class MatchHeader extends StatelessWidget {
           imageUrl: logo,
           width: 48,
           height: 48,
-          errorWidget: (context, url, error) => const Icon(Icons.flag, size: 40),
+          errorWidget: (context, url, error) => const Icon(Icons.flag, size: 40, color: AppColors.textMuted),
         ),
         const SizedBox(height: 12),
-        Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18)),
+        Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.textPrimary)),
         const SizedBox(height: 4),
         Text(score == '-' ? 'Yet to bat' : score, 
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16, fontFeatures: [FontFeature.tabularFigures()])),
+          style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 16, fontFeatures: [FontFeature.tabularFigures()])),
         if (overs != '-' && overs.isNotEmpty)
           Text('($overs ov)', style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
       ],

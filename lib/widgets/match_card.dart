@@ -3,7 +3,6 @@ import 'package:go_router/go_router.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../models/match_model.dart';
 import '../core/constants/colors.dart';
-import 'dart:ui';
 
 class MatchCard extends StatelessWidget {
   final MatchModel match;
@@ -32,7 +31,7 @@ class MatchCard extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
             side: BorderSide(
-              color: isLive ? AppColors.primary.withValues(alpha: 0.2) : Colors.white.withValues(alpha: 0.05),
+              color: isLive ? AppColors.primary.withOpacity(0.2) : AppColors.textPrimary.withOpacity(0.05),
               width: 1,
             ),
           ),
@@ -63,12 +62,12 @@ class MatchCard extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                         decoration: BoxDecoration(
-                          color: AppColors.error,
+                          color: AppColors.secondary,
                           borderRadius: BorderRadius.circular(4),
                         ),
                         child: const Text(
                           'LIVE',
-                          style: TextStyle(color: Colors.white, fontSize: 9, fontWeight: FontWeight.bold),
+                          style: TextStyle(color: Colors.black, fontSize: 9, fontWeight: FontWeight.bold),
                         ),
                       ),
                   ],
@@ -90,7 +89,7 @@ class MatchCard extends StatelessWidget {
                       child: Text(
                         match.status,
                         style: TextStyle(
-                          color: isLive ? Colors.white : AppColors.textSecondary,
+                          color: isLive ? AppColors.textPrimary : AppColors.textSecondary,
                           fontWeight: isLive ? FontWeight.w600 : FontWeight.normal,
                           fontSize: 12,
                         ),
@@ -129,7 +128,7 @@ class MatchCard extends StatelessWidget {
             name,
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary),
           ),
         ),
         const SizedBox(width: 8),
@@ -141,7 +140,7 @@ class MatchCard extends StatelessWidget {
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
                 fontSize: 16,
-                color: Colors.white,
+                color: AppColors.textPrimary,
                 fontFeatures: [FontFeature.tabularFigures()],
               ),
             ),

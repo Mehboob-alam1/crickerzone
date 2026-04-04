@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/constants/colors.dart';
 
 class WinPredictionWidget extends StatelessWidget {
   final String teamA;
@@ -22,16 +23,16 @@ class WinPredictionWidget extends StatelessWidget {
         children: [
           const Text(
             'Win Prediction',
-            style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+            style: TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 12),
           Row(
             children: [
               Column(
                 children: [
-                  Text(teamA, style: const TextStyle(color: Colors.black54, fontSize: 10)),
+                  Text(teamA, style: const TextStyle(color: AppColors.textMuted, fontSize: 10)),
                   Text('$percentageA%',
-                      style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                      style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 18)),
                 ],
               ),
               Expanded(
@@ -47,18 +48,18 @@ class WinPredictionWidget extends StatelessWidget {
                         Expanded(
                           flex: percentageA,
                           child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.blue[600],
-                              borderRadius: const BorderRadius.horizontal(left: Radius.circular(4)),
+                            decoration: const BoxDecoration(
+                              color: AppColors.primary,
+                              borderRadius: BorderRadius.horizontal(left: Radius.circular(4)),
                             ),
                           ),
                         ),
                         Expanded(
                           flex: percentageB,
                           child: Container(
-                            decoration: BoxDecoration(
-                              color: Colors.yellow[600],
-                              borderRadius: const BorderRadius.horizontal(right: Radius.circular(4)),
+                            decoration: const BoxDecoration(
+                              color: AppColors.secondary,
+                              borderRadius: BorderRadius.horizontal(right: Radius.circular(4)),
                             ),
                           ),
                         ),
@@ -69,14 +70,14 @@ class WinPredictionWidget extends StatelessWidget {
               ),
               Column(
                 children: [
-                  Text(teamB, style: const TextStyle(color: Colors.black54, fontSize: 10)),
+                  Text(teamB, style: const TextStyle(color: AppColors.textMuted, fontSize: 10)),
                   Text('$percentageB%',
-                      style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18)),
+                      style: const TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 18)),
                 ],
               ),
             ],
           ),
-          const Divider(height: 32),
+          const Divider(height: 32, color: Colors.white10),
         ],
       ),
     );

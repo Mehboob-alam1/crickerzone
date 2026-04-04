@@ -60,7 +60,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         width: 8,
                         height: 8,
                         decoration: const BoxDecoration(
-                          color: AppColors.error,
+                          color: AppColors.secondary,
                           shape: BoxShape.circle,
                         ),
                       ),
@@ -100,8 +100,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: FadeInDown(
                       duration: const Duration(milliseconds: 400),
                       child: TextField(
+                        style: const TextStyle(color: AppColors.textPrimary),
                         decoration: InputDecoration(
                           hintText: 'Search for series, teams or players...',
+                          hintStyle: const TextStyle(color: AppColors.textMuted),
                           prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
                           filled: true,
                           fillColor: AppColors.surface,
@@ -194,7 +196,7 @@ class _HomeScreenState extends State<HomeScreen> {
               image: DecorationImage(
                 image: NetworkImage('https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=500&auto=format&fit=crop&q=60'),
                 fit: BoxFit.cover,
-                opacity: 0.15,
+                opacity: 0.1,
               ),
             ),
             child: Center(
@@ -206,7 +208,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     SizedBox(height: 12),
                     Text('SCORE ZONE',
                         style: TextStyle(
-                            color: Colors.white,
+                            color: AppColors.textPrimary,
                             fontSize: 22,
                             fontWeight: FontWeight.bold,
                             letterSpacing: 2)),
@@ -270,12 +272,12 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildCategories() {
     final categories = [
-      {'name': 'News', 'icon': Icons.newspaper_rounded, 'color': Colors.blue},
-      {'name': 'Videos', 'icon': Icons.play_circle_fill_rounded, 'color': Colors.red},
-      {'name': 'Rankings', 'icon': Icons.leaderboard_rounded, 'color': Colors.orange},
+      {'name': 'News', 'icon': Icons.newspaper_rounded, 'color': const Color(0xFFE57373)}, // Warm red
+      {'name': 'Videos', 'icon': Icons.play_circle_fill_rounded, 'color': AppColors.secondary},
+      {'name': 'Rankings', 'icon': Icons.leaderboard_rounded, 'color': AppColors.accent},
       {'name': 'Series', 'icon': Icons.emoji_events_rounded, 'color': AppColors.primary},
-      {'name': 'Teams', 'icon': Icons.group_rounded, 'color': Colors.purple},
-      {'name': 'Players', 'icon': Icons.person_rounded, 'color': Colors.teal},
+      {'name': 'Teams', 'icon': Icons.group_rounded, 'color': const Color(0xFFBA68C8)}, // Warm purple
+      {'name': 'Players', 'icon': Icons.person_rounded, 'color': const Color(0xFF4DB6AC)}, // Warm teal
     ];
 
     return SizedBox(

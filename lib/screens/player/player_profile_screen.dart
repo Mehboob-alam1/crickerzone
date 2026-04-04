@@ -83,7 +83,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withValues(alpha: 0.1),
+                    Colors.black.withOpacity(0.1),
                     AppColors.background,
                   ],
                 ),
@@ -107,7 +107,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
               children: [
                 Text(
                   player.name.toUpperCase(),
-                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: 1),
+                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: 1, color: AppColors.textPrimary),
                 ),
                 Text(
                   player.role,
@@ -151,14 +151,14 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+        border: Border.all(color: AppColors.textPrimary.withOpacity(0.05)),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, color: AppColors.primary.withValues(alpha: 0.5), size: 20),
+          Icon(icon, color: AppColors.primary.withOpacity(0.5), size: 20),
           const SizedBox(height: 8),
-          Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+          Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
           const SizedBox(height: 2),
           Text(label, style: const TextStyle(color: AppColors.textMuted, fontSize: 10, fontWeight: FontWeight.bold)),
         ],
@@ -177,16 +177,16 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
           width: 60,
           margin: const EdgeInsets.only(right: 12),
           decoration: BoxDecoration(
-            color: index == 0 ? AppColors.primary.withValues(alpha: 0.2) : AppColors.surface,
+            color: index == 0 ? AppColors.primary.withOpacity(0.2) : AppColors.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: index == 0 ? AppColors.primary : Colors.white10),
+            border: Border.all(color: index == 0 ? AppColors.primary : AppColors.textPrimary.withOpacity(0.05)),
           ),
           child: Center(
             child: Text(
               forms[index],
               style: TextStyle(
                 fontWeight: FontWeight.bold,
-                color: index == 0 ? AppColors.primary : Colors.white,
+                color: index == 0 ? AppColors.primary : AppColors.textPrimary,
               ),
             ),
           ),

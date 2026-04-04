@@ -24,7 +24,7 @@ class PlayerCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+          border: Border.all(color: AppColors.textPrimary.withOpacity(0.05)),
         ),
         child: ListTile(
           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -39,14 +39,14 @@ class PlayerCard extends StatelessWidget {
               child: CachedNetworkImage(
                 imageUrl: player.image,
                 fit: BoxFit.cover,
-                placeholder: (context, url) => Container(color: Colors.grey[900]),
-                errorWidget: (context, url, error) => const Icon(Icons.person, color: Colors.white),
+                placeholder: (context, url) => Container(color: AppColors.surface),
+                errorWidget: (context, url, error) => const Icon(Icons.person, color: AppColors.textMuted),
               ),
             ),
           ),
           title: Text(
             player.name,
-            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+            style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 18, color: AppColors.textPrimary),
           ),
           subtitle: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -83,7 +83,7 @@ class PlayerCard extends StatelessWidget {
     return Row(
       children: [
         Text('$label: ', style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
-        Text(value, style: const TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold)),
+        Text(value, style: const TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold)),
       ],
     );
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../core/constants/colors.dart';
 
 class VenueWeatherWidget extends StatelessWidget {
   final String venueName;
@@ -23,26 +24,51 @@ class VenueWeatherWidget extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(venueName, style: const TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 12),
-          Row(
-            children: [
-              Icon(Icons.wb_cloudy_outlined, color: Colors.yellow[700], size: 40),
-              const SizedBox(width: 12),
-              Text(temp, style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              const Spacer(),
-              Text('updated at $updateTime', style: const TextStyle(color: Colors.black45, fontSize: 10)),
-            ],
-          ),
+          const Text('Venue & Weather',
+              style: TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16),
-          Row(
-            children: [
-              _buildWeatherDetail(Icons.water_drop_outlined, '$humidity Humidity'),
-              const SizedBox(width: 40),
-              _buildWeatherDetail(Icons.cloud_outlined, '$rainChance Chance'),
-            ],
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: AppColors.textPrimary.withOpacity(0.05)),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(venueName,
+                    style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w600)),
+                const SizedBox(height: 16),
+                Row(
+                  children: [
+                    const Icon(Icons.wb_sunny_rounded, color: AppColors.primary, size: 32),
+                    const SizedBox(width: 12),
+                    Text(temp,
+                        style: const TextStyle(color: AppColors.textPrimary, fontSize: 28, fontWeight: FontWeight.bold)),
+                    const Spacer(),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        _buildWeatherDetail(Icons.water_drop_outlined, 'Humidity: $humidity'),
+                        const SizedBox(height: 4),
+                        _buildWeatherDetail(Icons.cloud_outlined, 'Rain: $rainChance'),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 12),
+                Align(
+                  alignment: Alignment.centerRight,
+                  child: Text(
+                    'Updated: $updateTime',
+                    style: const TextStyle(color: AppColors.textMuted, fontSize: 10),
+                  ),
+                ),
+              ],
+            ),
           ),
-          const Divider(height: 32),
+          const SizedBox(height: 24),
         ],
       ),
     );
@@ -50,10 +76,11 @@ class VenueWeatherWidget extends StatelessWidget {
 
   Widget _buildWeatherDetail(IconData icon, String text) {
     return Row(
+      mainAxisSize: MainAxisSize.min,
       children: [
-        Icon(icon, size: 16, color: Colors.blue),
+        Icon(icon, size: 14, color: AppColors.secondary),
         const SizedBox(width: 4),
-        Text(text, style: const TextStyle(fontSize: 11, color: Colors.black54)),
+        Text(text, style: const TextStyle(fontSize: 11, color: AppColors.textSecondary)),
       ],
     );
   }

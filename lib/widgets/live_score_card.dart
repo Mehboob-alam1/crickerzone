@@ -17,11 +17,12 @@ class LiveScoreCard extends StatelessWidget {
         width: 320,
         margin: const EdgeInsets.only(right: 16),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: AppColors.surface,
           borderRadius: BorderRadius.circular(20),
+          border: Border.all(color: AppColors.primary.withOpacity(0.2)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.05),
+              color: Colors.black.withOpacity(0.2),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -33,23 +34,23 @@ class LiveScoreCard extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                color: Colors.red[600],
+                color: AppColors.secondary.withOpacity(0.15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text(
                       match.series.toUpperCase(),
-                      style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: AppColors.primary, fontSize: 10, fontWeight: FontWeight.bold),
                     ),
                     Row(
                       children: [
                         Container(
                           width: 8,
                           height: 8,
-                          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                          decoration: const BoxDecoration(color: AppColors.error, shape: BoxShape.circle),
                         ),
                         const SizedBox(width: 4),
-                        const Text('LIVE', style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold)),
+                        const Text('LIVE', style: TextStyle(color: AppColors.error, fontSize: 10, fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ],
@@ -65,7 +66,7 @@ class LiveScoreCard extends StatelessWidget {
                     const Divider(height: 24),
                     Text(
                       match.status,
-                      style: const TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
+                      style: const TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -82,15 +83,24 @@ class LiveScoreCard extends StatelessWidget {
   Widget _buildTeamRow(String name, String logo, String score, String overs) {
     return Row(
       children: [
-        CachedNetworkImage(imageUrl: logo, width: 32, height: 32),
+        ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: CachedNetworkImage(
+            imageUrl: logo,
+            width: 32,
+            height: 32,
+            placeholder: (context, url) => Container(color: Colors.white12),
+            errorWidget: (context, url, error) => const Icon(Icons.flag, size: 24, color: AppColors.textMuted),
+          ),
+        ),
         const SizedBox(width: 12),
-        Expanded(child: Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14))),
+        Expanded(child: Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.textPrimary))),
         Column(
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(score, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14)),
+            Text(score == '-' ? '' : score, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.textPrimary)),
             if (overs != '-' && overs.isNotEmpty)
-              Text('($overs)', style: const TextStyle(color: Colors.black45, fontSize: 10)),
+              Text('($overs)', style: const TextStyle(color: AppColors.textMuted, fontSize: 10)),
           ],
         ),
       ],

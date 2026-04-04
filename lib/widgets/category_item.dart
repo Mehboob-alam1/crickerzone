@@ -38,7 +38,7 @@ class CategoryItem extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: color.withValues(alpha: 0.1),
+                      color: color.withOpacity(0.1),
                       blurRadius: 10,
                       spreadRadius: 2,
                     )
@@ -52,7 +52,7 @@ class CategoryItem extends StatelessWidget {
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 overflow: TextOverflow.ellipsis,
-                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500),
+                style: const TextStyle(fontSize: 11, fontWeight: FontWeight.w500, color: AppColors.textPrimary),
               ),
             ],
           ),

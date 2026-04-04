@@ -28,7 +28,7 @@ class TeamCard extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.surface,
             borderRadius: BorderRadius.circular(20),
-            border: Border.all(color: Colors.white.withValues(alpha: 0.05)),
+            border: Border.all(color: AppColors.textPrimary.withOpacity(0.05)),
           ),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -40,13 +40,13 @@ class TeamCard extends StatelessWidget {
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
                     border: Border.all(
-                      color: AppColors.primary.withValues(alpha: 0.2), 
+                      color: AppColors.primary.withOpacity(0.2), 
                       width: 2,
                     ),
                   ),
                   child: CircleAvatar(
                     radius: 35,
-                    backgroundColor: Colors.white.withValues(alpha: 0.05),
+                    backgroundColor: AppColors.textPrimary.withOpacity(0.05),
                     backgroundImage: CachedNetworkImageProvider(team.logo),
                   ),
                 ),
@@ -54,7 +54,7 @@ class TeamCard extends StatelessWidget {
               const SizedBox(height: 12),
               Text(
                 team.name,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary),
               ),
               const SizedBox(height: 4),
               Text(
@@ -72,7 +72,7 @@ class TeamCard extends StatelessWidget {
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
+                    color: AppColors.primary.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: const Text(
