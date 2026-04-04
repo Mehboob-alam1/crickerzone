@@ -4,6 +4,7 @@ import 'package:animate_do/animate_do.dart';
 import '../../providers/team_provider.dart';
 import '../../core/constants/colors.dart';
 import '../../widgets/team_card.dart';
+import 'team_detail_screen.dart';
 
 class TeamsScreen extends StatefulWidget {
   const TeamsScreen({super.key});
@@ -29,15 +30,18 @@ class _TeamsScreenState extends State<TeamsScreen> {
       appBar: AppBar(
         title: FadeInDown(child: const Text('CRICKET TEAMS')),
         actions: [
-          FadeInRight(child: IconButton(onPressed: () {}, icon: const Icon(Icons.filter_list_rounded))),
+          FadeInRight(
+              child: IconButton(
+                  onPressed: () {}, icon: const Icon(Icons.filter_list_rounded))),
         ],
       ),
       body: Consumer<TeamProvider>(
         builder: (context, provider, child) {
           if (provider.isLoading && provider.teams.isEmpty) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+            return const Center(
+                child: CircularProgressIndicator(color: AppColors.primary));
           }
-          
+
           return Column(
             children: [
               Padding(
@@ -47,7 +51,8 @@ class _TeamsScreenState extends State<TeamsScreen> {
                   child: TextField(
                     decoration: InputDecoration(
                       hintText: 'Search teams...',
-                      prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
+                      prefixIcon:
+                          const Icon(Icons.search, color: AppColors.textMuted),
                       filled: true,
                       fillColor: AppColors.surface,
                       border: OutlineInputBorder(
@@ -61,7 +66,8 @@ class _TeamsScreenState extends State<TeamsScreen> {
               ),
               Expanded(
                 child: GridView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 2,
                     crossAxisSpacing: 16,
@@ -74,7 +80,13 @@ class _TeamsScreenState extends State<TeamsScreen> {
                       team: provider.teams[index],
                       index: index,
                       onTap: () {
-                        // Navigate to team details
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TeamDetailScreen(
+                                teamId: provider.teams[index].id),
+                          ),
+                        );
                       },
                     );
                   },

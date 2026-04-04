@@ -1,14 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
-import '../../core/constants/colors.dart';
-import '../../providers/match_provider.dart';
-import '../../widgets/match_card.dart';
-import '../../widgets/section_header.dart';
-import '../../widgets/category_item.dart';
-import '../../widgets/drawer_item.dart';
-import '../player/players_list_screen.dart';
-import '../team/teams_screen.dart';
+import 'package:score_zone/core/constants/colors.dart';
+import 'package:score_zone/providers/match_provider.dart';
+import 'package:score_zone/widgets/match_card.dart';
+import 'package:score_zone/widgets/section_header.dart';
+import 'package:score_zone/widgets/category_item.dart';
+import 'package:score_zone/widgets/drawer_item.dart';
+import 'package:score_zone/screens/player/players_list_screen.dart';
+import 'package:score_zone/screens/team/teams_screen.dart';
+import 'package:score_zone/screens/series/series_screen.dart';
+import 'package:score_zone/screens/news/news_screen.dart';
+import 'package:score_zone/screens/rankings/rankings_screen.dart';
+import 'package:score_zone/screens/videos/videos_screen.dart';
+import 'package:score_zone/screens/notifications/notifications_screen.dart';
+import 'package:score_zone/screens/about/about_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -37,20 +43,22 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       drawer: _buildDrawer(),
       appBar: AppBar(
-        title: FadeInLeft(child: const Text('SCORE ZONE')),
+        title: Center(child: FadeInLeft(child: const Text('SCORE ZONE'))),
         actions: [
           FadeInRight(
             child: Row(
               children: [
-                IconButton(
-                  onPressed: () {},
-                  icon: const Icon(Icons.search_rounded),
-                  tooltip: 'Search matches',
-                ),
                 Stack(
                   children: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const NotificationsScreen(),
+                          ),
+                        );
+                      },
                       icon: const Icon(Icons.notifications_none_rounded),
                     ),
                     Positioned(
@@ -103,15 +111,22 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: const TextStyle(color: AppColors.textPrimary),
                         decoration: InputDecoration(
                           hintText: 'Search for series, teams or players...',
-                          hintStyle: const TextStyle(color: AppColors.textMuted),
-                          prefixIcon: const Icon(Icons.search, color: AppColors.textMuted),
+                          hintStyle: const TextStyle(
+                            color: AppColors.textMuted,
+                          ),
+                          prefixIcon: const Icon(
+                            Icons.search,
+                            color: AppColors.textMuted,
+                          ),
                           filled: true,
                           fillColor: AppColors.surface,
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(16),
                             borderSide: BorderSide.none,
                           ),
-                          contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 0,
+                          ),
                         ),
                       ),
                     ),
@@ -121,24 +136,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 SliverToBoxAdapter(
                   child: FadeInDown(
                     duration: const Duration(milliseconds: 500),
-                    child: _buildCategories()
+                    child: _buildCategories(),
                   ),
                 ),
-                
+
                 if (provider.liveMatches.isNotEmpty) ...[
                   SliverToBoxAdapter(
                     child: FadeInLeft(
-                      child: const SectionHeader(title: 'Live Matches', isLive: true)
+                      child: const SectionHeader(
+                        title: 'Live Matches',
+                        isLive: true,
+                      ),
                     ),
                   ),
                   SliverToBoxAdapter(child: _buildLiveMatchesList(provider)),
                 ],
-                
+
                 if (provider.upcomingMatches.isNotEmpty) ...[
                   SliverToBoxAdapter(
                     child: FadeInLeft(
                       delay: const Duration(milliseconds: 200),
-                      child: const SectionHeader(title: 'Upcoming Matches')
+                      child: const SectionHeader(title: 'Upcoming Matches'),
                     ),
                   ),
                   SliverPadding(
@@ -147,7 +165,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       delegate: SliverChildBuilderDelegate(
                         (context, index) => FadeInUp(
                           delay: Duration(milliseconds: 100 * index),
-                          child: MatchCard(match: provider.upcomingMatches[index]),
+                          child: MatchCard(
+                            match: provider.upcomingMatches[index],
+                          ),
                         ),
                         childCount: provider.upcomingMatches.length,
                       ),
@@ -159,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   SliverToBoxAdapter(
                     child: FadeInLeft(
                       delay: const Duration(milliseconds: 400),
-                      child: const SectionHeader(title: 'Recent Matches')
+                      child: const SectionHeader(title: 'Recent Matches'),
                     ),
                   ),
                   SliverPadding(
@@ -168,14 +188,16 @@ class _HomeScreenState extends State<HomeScreen> {
                       delegate: SliverChildBuilderDelegate(
                         (context, index) => FadeInUp(
                           delay: Duration(milliseconds: 100 * index),
-                          child: MatchCard(match: provider.recentMatches[index]),
+                          child: MatchCard(
+                            match: provider.recentMatches[index],
+                          ),
                         ),
                         childCount: provider.recentMatches.length,
                       ),
                     ),
                   ),
                 ],
-                
+
                 const SliverToBoxAdapter(child: SizedBox(height: 32)),
               ],
             ),
@@ -194,7 +216,9 @@ class _HomeScreenState extends State<HomeScreen> {
             decoration: const BoxDecoration(
               color: AppColors.surface,
               image: DecorationImage(
-                image: NetworkImage('https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=500&auto=format&fit=crop&q=60'),
+                image: NetworkImage(
+                  'https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=500&auto=format&fit=crop&q=60',
+                ),
                 fit: BoxFit.cover,
                 opacity: 0.1,
               ),
@@ -204,14 +228,21 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: const Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.sports_cricket, color: AppColors.primary, size: 48),
+                    Icon(
+                      Icons.sports_cricket,
+                      color: AppColors.primary,
+                      size: 48,
+                    ),
                     SizedBox(height: 12),
-                    Text('SCORE ZONE',
-                        style: TextStyle(
-                            color: AppColors.textPrimary,
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 2)),
+                    Text(
+                      'SCORE ZONE',
+                      style: TextStyle(
+                        color: AppColors.textPrimary,
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        letterSpacing: 2,
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -226,14 +257,23 @@ class _HomeScreenState extends State<HomeScreen> {
           DrawerItem(
             icon: Icons.emoji_events_rounded,
             title: 'Series',
-            onTap: () => Navigator.pop(context),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const SeriesScreen()),
+              );
+            },
           ),
           DrawerItem(
             icon: Icons.group_rounded,
             title: 'Teams',
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const TeamsScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TeamsScreen()),
+              );
             },
           ),
           DrawerItem(
@@ -241,18 +281,35 @@ class _HomeScreenState extends State<HomeScreen> {
             title: 'Players',
             onTap: () {
               Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => const PlayersListScreen()));
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const PlayersListScreen(),
+                ),
+              );
             },
           ),
           DrawerItem(
             icon: Icons.leaderboard_rounded,
             title: 'Rankings',
-            onTap: () => Navigator.pop(context),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const RankingsScreen()),
+              );
+            },
           ),
           DrawerItem(
             icon: Icons.newspaper_rounded,
             title: 'News',
-            onTap: () => Navigator.pop(context),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const NewsScreen()),
+              );
+            },
           ),
           const Divider(color: Colors.white10, height: 32),
           DrawerItem(
@@ -263,7 +320,13 @@ class _HomeScreenState extends State<HomeScreen> {
           DrawerItem(
             icon: Icons.info_outline_rounded,
             title: 'About Us',
-            onTap: () => Navigator.pop(context),
+            onTap: () {
+              Navigator.pop(context);
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const AboutScreen()),
+              );
+            },
           ),
         ],
       ),
@@ -272,12 +335,36 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildCategories() {
     final categories = [
-      {'name': 'News', 'icon': Icons.newspaper_rounded, 'color': const Color(0xFFE57373)}, // Warm red
-      {'name': 'Videos', 'icon': Icons.play_circle_fill_rounded, 'color': AppColors.secondary},
-      {'name': 'Rankings', 'icon': Icons.leaderboard_rounded, 'color': AppColors.accent},
-      {'name': 'Series', 'icon': Icons.emoji_events_rounded, 'color': AppColors.primary},
-      {'name': 'Teams', 'icon': Icons.group_rounded, 'color': const Color(0xFFBA68C8)}, // Warm purple
-      {'name': 'Players', 'icon': Icons.person_rounded, 'color': const Color(0xFF4DB6AC)}, // Warm teal
+      {
+        'name': 'News',
+        'icon': Icons.newspaper_rounded,
+        'color': const Color(0xFFE57373),
+      }, // Warm red
+      {
+        'name': 'Videos',
+        'icon': Icons.play_circle_fill_rounded,
+        'color': AppColors.secondary,
+      },
+      {
+        'name': 'Rankings',
+        'icon': Icons.leaderboard_rounded,
+        'color': AppColors.accent,
+      },
+      {
+        'name': 'Series',
+        'icon': Icons.emoji_events_rounded,
+        'color': AppColors.primary,
+      },
+      {
+        'name': 'Teams',
+        'icon': Icons.group_rounded,
+        'color': const Color(0xFFBA68C8),
+      }, // Warm purple
+      {
+        'name': 'Players',
+        'icon': Icons.person_rounded,
+        'color': const Color(0xFF4DB6AC),
+      }, // Warm teal
     ];
 
     return SizedBox(
@@ -296,9 +383,37 @@ class _HomeScreenState extends State<HomeScreen> {
             index: index,
             onTap: () {
               if (cat['name'] == 'Teams') {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const TeamsScreen()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TeamsScreen()),
+                );
               } else if (cat['name'] == 'Players') {
-                Navigator.push(context, MaterialPageRoute(builder: (context) => const PlayersListScreen()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const PlayersListScreen(),
+                  ),
+                );
+              } else if (cat['name'] == 'Series') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const SeriesScreen()),
+                );
+              } else if (cat['name'] == 'News') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const NewsScreen()),
+                );
+              } else if (cat['name'] == 'Rankings') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const RankingsScreen()),
+                );
+              } else if (cat['name'] == 'Videos') {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const VideosScreen()),
+                );
               }
             },
           );
@@ -317,7 +432,7 @@ class _HomeScreenState extends State<HomeScreen> {
         itemCount: provider.liveMatches.length,
         itemBuilder: (context, index) => FadeInRight(
           delay: Duration(milliseconds: 200 * index),
-          child: MatchCard(match: provider.liveMatches[index], isLive: true)
+          child: MatchCard(match: provider.liveMatches[index], isLive: true),
         ),
       ),
     );
