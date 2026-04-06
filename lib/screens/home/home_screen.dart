@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
+import 'package:go_router/go_router.dart';
 import 'package:score_zone/core/constants/colors.dart';
 import 'package:score_zone/providers/match_provider.dart';
 import 'package:score_zone/widgets/match_card.dart';
@@ -107,25 +108,30 @@ class _HomeScreenState extends State<HomeScreen> {
                   sliver: SliverToBoxAdapter(
                     child: FadeInDown(
                       duration: const Duration(milliseconds: 400),
-                      child: TextField(
-                        style: const TextStyle(color: AppColors.textPrimary),
-                        decoration: InputDecoration(
-                          hintText: 'Search for series, teams or players...',
-                          hintStyle: const TextStyle(
-                            color: AppColors.textMuted,
-                          ),
-                          prefixIcon: const Icon(
-                            Icons.search,
-                            color: AppColors.textMuted,
-                          ),
-                          filled: true,
-                          fillColor: AppColors.surface,
-                          border: OutlineInputBorder(
+                      child: GestureDetector(
+                        onTap: () {
+                          context.push('/search');
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: AppColors.surface,
                             borderRadius: BorderRadius.circular(16),
-                            borderSide: BorderSide.none,
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
-                            vertical: 0,
+                          child: const Row(
+                            children: [
+                              Icon(
+                                Icons.search,
+                                color: AppColors.textMuted,
+                              ),
+                              SizedBox(width: 12),
+                              Text(
+                                'Search for series, teams or players...',
+                                style: TextStyle(
+                                  color: AppColors.textMuted,
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
@@ -215,13 +221,6 @@ class _HomeScreenState extends State<HomeScreen> {
           DrawerHeader(
             decoration: const BoxDecoration(
               color: AppColors.surface,
-              image: DecorationImage(
-                image: NetworkImage(
-                  'https://images.unsplash.com/photo-1531415074968-036ba1b575da?w=500&auto=format&fit=crop&q=60',
-                ),
-                fit: BoxFit.cover,
-                opacity: 0.1,
-              ),
             ),
             child: Center(
               child: ZoomIn(

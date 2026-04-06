@@ -102,48 +102,61 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  player.name.toUpperCase(),
-                  style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: 1, color: AppColors.textPrimary),
-                ),
-                Text(
-                  player.role,
-                  style: const TextStyle(color: AppColors.primary, fontSize: 16, fontWeight: FontWeight.w500),
-                ),
-              ],
-            ),
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-              decoration: BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.circular(8),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    player.name.toUpperCase(),
+                    style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: 1, color: AppColors.textPrimary),
+                  ),
+                  Text(
+                    player.role,
+                    style: const TextStyle(color: AppColors.primary, fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                ],
               ),
-              child: const Text('RANK #1', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12)),
             ),
+            if (player.team != null)
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: AppColors.primary,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  player.team!,
+                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
+                ),
+              ),
           ],
         ),
+        const SizedBox(height: 24),
+        _buildInfoRow('Born', player.dob ?? 'N/A'),
+        _buildInfoRow('Birth Place', player.birthPlace ?? 'N/A'),
+        _buildInfoRow('Height', player.height ?? 'N/A'),
+        _buildInfoRow('Batting Style', player.batStyle ?? 'N/A'),
+        _buildInfoRow('Bowling Style', player.bowlStyle ?? 'N/A'),
       ],
     );
   }
 
-  Widget _buildStatsGrid(player) {
-    return GridView.count(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      crossAxisCount: 2,
-      childAspectRatio: 1.5,
-      mainAxisSpacing: 12,
-      crossAxisSpacing: 12,
-      children: [
-        _buildStatCard('RUNS', player.runs, Icons.sports_cricket),
-        _buildStatCard('AVERAGE', player.average, Icons.trending_up),
-        _buildStatCard('S/R', player.strikeRate, Icons.speed),
-        _buildStatCard('WICKETS', player.wickets, Icons.scuba_diving),
-      ],
+  Widget _buildInfoRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: const TextStyle(color: AppColors.textMuted, fontSize: 14)),
+          Text(value, style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w500)),
+        ],
+      ),
     );
+  }
+
+  Widget _buildStatsGrid(player) {
+    // If stats are not available yet, we could show a placeholder or just hide it
+    return const Center(child: Text('Career stats available in full subscription', style: TextStyle(color: AppColors.textMuted, fontSize: 12)));
   }
 
   Widget _buildStatCard(String label, String value, IconData icon) {

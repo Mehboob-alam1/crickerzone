@@ -1,94 +1,93 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import '../../core/constants/colors.dart';
+import '../../providers/series_provider.dart';
 
-class SeriesScreen extends StatelessWidget {
+class SeriesScreen extends StatefulWidget {
   const SeriesScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final List<Map<String, String>> seriesList = [
-      {
-        'title': 'ICC Men\'s T20 World Cup 2024',
-        'date': 'Jun 01 - Jun 29',
-        'status': 'Ongoing',
-      },
-      {
-        'title': 'India tour of Zimbabwe, 2024',
-        'date': 'Jul 06 - Jul 14',
-        'status': 'Upcoming',
-      },
-      {
-        'title': 'England tour of West Indies, 2024',
-        'date': 'Oct 31 - Nov 17',
-        'status': 'Upcoming',
-      },
-      {
-        'title': 'IPL 2024',
-        'date': 'Mar 22 - May 26',
-        'status': 'Finished',
-      },
-    ];
+  State<SeriesScreen> createState() => _SeriesScreenState();
+}
 
+class _SeriesScreenState extends State<SeriesScreen> {
+  @override
+  void initState() {
+    super.initState();
+    Future.microtask(() {
+      if (mounted) {
+        context.read<SeriesProvider>().fetchInternationalSeries();
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('CRICKET SERIES'),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.all(16),
-        itemCount: seriesList.length,
-        itemBuilder: (context, index) {
-          final series = seriesList[index];
-          return FadeInUp(
-            delay: Duration(milliseconds: 100 * index),
-            child: Card(
-              margin: const EdgeInsets.only(bottom: 16),
-              child: ListTile(
-                contentPadding: const EdgeInsets.all(16),
-                title: Text(
-                  series['title']!,
-                  style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
-                ),
-                subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: Text(
-                    series['date']!,
-                    style: const TextStyle(color: AppColors.textMuted),
-                  ),
-                ),
-                trailing: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: _getStatusColor(series['status']!).withOpacity(0.1),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: _getStatusColor(series['status']!).withOpacity(0.5)),
-                  ),
-                  child: Text(
-                    series['status']!,
-                    style: TextStyle(
-                      color: _getStatusColor(series['status']!),
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
+      body: Consumer<SeriesProvider>(
+        builder: (context, provider, child) {
+          if (provider.isLoading && provider.seriesList.isEmpty) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
+          }
+
+          if (provider.seriesList.isEmpty) {
+            return const Center(child: Text("No series found"));
+          }
+
+          return RefreshIndicator(
+            onRefresh: () => provider.fetchInternationalSeries(),
+            color: AppColors.primary,
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: provider.seriesList.length,
+              itemBuilder: (context, index) {
+                final series = provider.seriesList[index];
+                return FadeInUp(
+                  delay: Duration(milliseconds: 50 * (index % 10)),
+                  child: Card(
+                    margin: const EdgeInsets.only(bottom: 16),
+                    color: AppColors.surface,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(16),
+                      title: Text(
+                        series.name,
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 16,
+                          color: AppColors.textPrimary,
+                        ),
+                      ),
+                      subtitle: Padding(
+                        padding: const EdgeInsets.only(top: 8.0),
+                        child: Text(
+                          "Type: ${series.seriesType}",
+                          style: const TextStyle(color: AppColors.textMuted),
+                        ),
+                      ),
+                      trailing: const Icon(
+                        Icons.chevron_right,
+                        color: AppColors.primary,
+                      ),
+                      onTap: () {
+                        // Navigate to series detail (matches/squads)
+                      },
                     ),
                   ),
-                ),
-                onTap: () {},
-              ),
+                );
+              },
             ),
           );
         },
       ),
     );
-  }
-
-  Color _getStatusColor(String status) {
-    switch (status) {
-      case 'Ongoing':
-        return Colors.green;
-      case 'Upcoming':
-        return AppColors.primary;
-      default:
-        return AppColors.textMuted;
-    }
   }
 }

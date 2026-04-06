@@ -2,19 +2,53 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:go_router/go_router.dart';
 import '../../providers/team_provider.dart';
 import '../../core/constants/colors.dart';
+import '../../models/team_model.dart';
 
-class TeamDetailScreen extends StatelessWidget {
+class TeamDetailScreen extends StatefulWidget {
   final String teamId;
 
   const TeamDetailScreen({super.key, required this.teamId});
 
   @override
+  State<TeamDetailScreen> createState() => _TeamDetailScreenState();
+}
+
+class _TeamDetailScreenState extends State<TeamDetailScreen> {
+  List<dynamic> _squad = [];
+  bool _loadingSquad = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchData();
+  }
+
+  Future<void> _fetchData() async {
+    final provider = context.read<TeamProvider>();
+    final squad = await provider.fetchTeamPlayers(widget.teamId);
+    if (mounted) {
+      setState(() {
+        _squad = squad;
+        _loadingSquad = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final team = context.watch<TeamProvider>().teams.firstWhere(
-          (t) => t.id == teamId,
-          orElse: () => context.read<TeamProvider>().teams.first,
+          (t) => t.id == widget.teamId,
+          orElse: () => TeamModel(
+            id: widget.teamId,
+            name: 'Loading...',
+            code: '...',
+            logo: '',
+            description: '',
+            squad: [],
+          ),
         );
 
     return Scaffold(
@@ -36,16 +70,17 @@ class TeamDetailScreen extends StatelessWidget {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Center(
-                    child: Opacity(
-                      opacity: 0.2,
-                      child: CachedNetworkImage(
-                        imageUrl: team.logo,
-                        width: 150,
-                        height: 150,
+                  if (team.logo.isNotEmpty)
+                    Center(
+                      child: Opacity(
+                        opacity: 0.2,
+                        child: CachedNetworkImage(
+                          imageUrl: team.logo,
+                          width: 150,
+                          height: 150,
+                        ),
                       ),
                     ),
-                  ),
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -68,40 +103,7 @@ class TeamDetailScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  FadeInUp(
-                    child: Card(
-                      color: AppColors.surface,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'ABOUT',
-                              style: TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.2,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              team.description,
-                              style: const TextStyle(
-                                color: AppColors.textSecondary,
-                                fontSize: 14,
-                                height: 1.5,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 8),
                   FadeInLeft(
                     child: const Text(
                       'SQUAD',
@@ -113,38 +115,56 @@ class TeamDetailScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 12),
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: team.squad.length,
-                    itemBuilder: (context, index) {
-                      return FadeInUp(
-                        delay: Duration(milliseconds: 100 * index),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: CircleAvatar(
-                            backgroundColor: AppColors.primary.withOpacity(0.1),
-                            child: Text(
-                              team.squad[index][0],
-                              style: const TextStyle(color: AppColors.primary),
+                  if (_loadingSquad)
+                    const Center(child: CircularProgressIndicator())
+                  else if (_squad.isEmpty)
+                    const Center(child: Text('No squad data available', style: TextStyle(color: AppColors.textMuted)))
+                  else
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _squad.length,
+                      itemBuilder: (context, index) {
+                        final player = _squad[index];
+                        return FadeInUp(
+                          delay: Duration(milliseconds: 50 * index),
+                          child: ListTile(
+                            contentPadding: EdgeInsets.zero,
+                            leading: CircleAvatar(
+                              backgroundColor: AppColors.primary.withOpacity(0.1),
+                              backgroundImage: player['faceImageId'] != null
+                                  ? CachedNetworkImageProvider('https://static.cricbuzz.com/a/img/v1/i1/c${player['faceImageId']}/i.jpg')
+                                  : null,
+                              child: player['faceImageId'] == null
+                                  ? Text(
+                                      player['name']?[0] ?? 'P',
+                                      style: const TextStyle(color: AppColors.primary),
+                                    )
+                                  : null,
                             ),
+                            title: Text(
+                              player['name'] ?? 'Unknown Player',
+                              style: const TextStyle(color: AppColors.textPrimary),
+                            ),
+                            subtitle: Text(
+                              player['role'] ?? 'Role not available',
+                              style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+                            ),
+                            trailing: const Icon(
+                              Icons.arrow_forward_ios,
+                              size: 14,
+                              color: AppColors.textMuted,
+                            ),
+                            onTap: () {
+                              final id = player['id']?.toString() ?? player['playerId']?.toString();
+                              if (id != null) {
+                                context.push('/player/$id');
+                              }
+                            },
                           ),
-                          title: Text(
-                            team.squad[index],
-                            style: const TextStyle(color: AppColors.textPrimary),
-                          ),
-                          trailing: const Icon(
-                            Icons.arrow_forward_ios,
-                            size: 14,
-                            color: AppColors.textMuted,
-                          ),
-                          onTap: () {
-                            // Navigate to player profile if ID was available
-                          },
-                        ),
-                      );
-                    },
-                  ),
+                        );
+                      },
+                    ),
                 ],
               ),
             ),
@@ -154,3 +174,4 @@ class TeamDetailScreen extends StatelessWidget {
     );
   }
 }
+

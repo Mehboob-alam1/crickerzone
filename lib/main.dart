@@ -4,6 +4,9 @@ import 'core/theme/app_theme.dart';
 import 'providers/match_provider.dart';
 import 'providers/team_provider.dart';
 import 'providers/player_provider.dart';
+import 'providers/news_provider.dart';
+import 'providers/series_provider.dart';
+import 'providers/ranking_provider.dart';
 import 'core/router/app_router.dart';
 
 void main() {
@@ -14,6 +17,9 @@ void main() {
         ChangeNotifierProvider(create: (_) => MatchProvider()),
         ChangeNotifierProvider(create: (_) => TeamProvider()),
         ChangeNotifierProvider(create: (_) => PlayerProvider()),
+        ChangeNotifierProvider(create: (_) => NewsProvider()),
+        ChangeNotifierProvider(create: (_) => SeriesProvider()),
+        ChangeNotifierProvider(create: (_) => RankingProvider()),
       ],
       child: const ScoreZoneApp(),
     ),
