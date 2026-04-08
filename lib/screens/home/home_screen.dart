@@ -141,12 +141,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
 
-                SliverToBoxAdapter(
-                  child: FadeInDown(
-                    duration: const Duration(milliseconds: 500),
-                    child: _buildCategories(),
-                  ),
-                ),
+                // SliverToBoxAdapter(
+                //   child: FadeInDown(
+                //     duration: const Duration(milliseconds: 500),
+                //     child: _buildCategories(),
+                //   ),
+                // ),
 
                 if (provider.liveMatches.isNotEmpty) ...[
                   SliverToBoxAdapter(
@@ -334,94 +334,94 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildCategories() {
-    final categories = [
-      {
-        'name': 'News',
-        'icon': Icons.newspaper_rounded,
-        'color': const Color(0xFFE57373),
-      }, // Warm red
-      {
-        'name': 'Videos',
-        'icon': Icons.play_circle_fill_rounded,
-        'color': AppColors.secondary,
-      },
-      {
-        'name': 'Rankings',
-        'icon': Icons.leaderboard_rounded,
-        'color': AppColors.accent,
-      },
-      {
-        'name': 'Series',
-        'icon': Icons.emoji_events_rounded,
-        'color': AppColors.primary,
-      },
-      {
-        'name': 'Teams',
-        'icon': Icons.group_rounded,
-        'color': const Color(0xFFBA68C8),
-      }, // Warm purple
-      {
-        'name': 'Players',
-        'icon': Icons.person_rounded,
-        'color': const Color(0xFF4DB6AC),
-      }, // Warm teal
-    ];
-
-    return SizedBox(
-      height: 130,
-      child: ListView.builder(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-        scrollDirection: Axis.horizontal,
-        physics: const BouncingScrollPhysics(),
-        itemCount: categories.length,
-        itemBuilder: (context, index) {
-          final cat = categories[index];
-          return CategoryItem(
-            name: cat['name'] as String,
-            icon: cat['icon'] as IconData,
-            color: cat['color'] as Color,
-            index: index,
-            onTap: () {
-              if (cat['name'] == 'Teams') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const TeamsScreen()),
-                );
-              } else if (cat['name'] == 'Players') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const PlayersListScreen(),
-                  ),
-                );
-              } else if (cat['name'] == 'Series') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SeriesScreen()),
-                );
-              } else if (cat['name'] == 'News') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const NewsScreen()),
-                );
-              } else if (cat['name'] == 'Rankings') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const RankingsScreen()),
-                );
-              } else if (cat['name'] == 'Videos') {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const VideosScreen()),
-                );
-              }
-            },
-          );
-        },
-      ),
-    );
-  }
+  // Widget _buildCategories() {
+  //   final categories = [
+  //     {
+  //       'name': 'News',
+  //       'icon': Icons.newspaper_rounded,
+  //       'color': const Color(0xFFE57373),
+  //     }, // Warm red
+  //     {
+  //       'name': 'Videos',
+  //       'icon': Icons.play_circle_fill_rounded,
+  //       'color': AppColors.secondary,
+  //     },
+  //     {
+  //       'name': 'Rankings',
+  //       'icon': Icons.leaderboard_rounded,
+  //       'color': AppColors.accent,
+  //     },
+  //     {
+  //       'name': 'Series',
+  //       'icon': Icons.emoji_events_rounded,
+  //       'color': AppColors.primary,
+  //     },
+  //     {
+  //       'name': 'Teams',
+  //       'icon': Icons.group_rounded,
+  //       'color': const Color(0xFFBA68C8),
+  //     }, // Warm purple
+  //     {
+  //       'name': 'Players',
+  //       'icon': Icons.person_rounded,
+  //       'color': const Color(0xFF4DB6AC),
+  //     }, // Warm teal
+  //   ];
+  //
+  //   return SizedBox(
+  //     height: 130,
+  //     child: ListView.builder(
+  //       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+  //       scrollDirection: Axis.horizontal,
+  //       physics: const BouncingScrollPhysics(),
+  //       itemCount: categories.length,
+  //       itemBuilder: (context, index) {
+  //         final cat = categories[index];
+  //         return CategoryItem(
+  //           name: cat['name'] as String,
+  //           icon: cat['icon'] as IconData,
+  //           color: cat['color'] as Color,
+  //           index: index,
+  //           onTap: () {
+  //             if (cat['name'] == 'Teams') {
+  //               Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(builder: (context) => const TeamsScreen()),
+  //               );
+  //             } else if (cat['name'] == 'Players') {
+  //               Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(
+  //                   builder: (context) => const PlayersListScreen(),
+  //                 ),
+  //               );
+  //             } else if (cat['name'] == 'Series') {
+  //               Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(builder: (context) => const SeriesScreen()),
+  //               );
+  //             } else if (cat['name'] == 'News') {
+  //               Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(builder: (context) => const NewsScreen()),
+  //               );
+  //             } else if (cat['name'] == 'Rankings') {
+  //               Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(builder: (context) => const RankingsScreen()),
+  //               );
+  //             } else if (cat['name'] == 'Videos') {
+  //               Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(builder: (context) => const VideosScreen()),
+  //               );
+  //             }
+  //           },
+  //         );
+  //       },
+  //     ),
+  //   );
+  // }
 
   Widget _buildLiveMatchesList(MatchProvider provider) {
     return SizedBox(

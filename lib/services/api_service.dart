@@ -7,6 +7,7 @@ class ApiService {
   static const String baseUrl = ApiConstants.baseUrl;
   static String _apiKey = ApiConstants.apiKey;
 
+  // Global queue to ensure ONLY one request is processed at a time across the entire app
   static Future<void> _requestQueue = Future.value();
   static Future<void>? _backoffFuture;
 
@@ -31,78 +32,103 @@ class ApiService {
         onRequest: (options, handler) async {
           debugPrint("⏳ Queue: ${options.path}");
 
-          final previous = _requestQueue;
-          final completer = Completer<void>();
-          _requestQueue = completer.future;
+          // 1. Take a spot in the queue
+          final previousTurn = _requestQueue;
+          final myTurn = Completer<void>();
+          _requestQueue = myTurn.future;
 
-          // wait previous request
-          await previous;
+          // Attach myTurn completer to options so we can finish the turn in response/error
+          options.extra["_myTurn"] = myTurn;
 
-          // wait global backoff
+          // 2. Wait for the previous request to FULLY FINISH (response or error)
+          await previousTurn;
+
+          // 3. Wait for global backoff if active (e.g., from a 429)
           if (_backoffFuture != null) {
-            debugPrint("⏳ Waiting backoff...");
+            debugPrint("⏳ Waiting for backoff to clear...");
             await _backoffFuture;
           }
 
-          // delay BEFORE request (important)
-          await Future.delayed(const Duration(seconds: 2));
+          // 4. Mandatory spacing delay: Cricbuzz Basic plan is very strict (1 req/sec).
+          // 4 seconds is safe to avoid overlapping due to network latency.
+          await Future.delayed(const Duration(milliseconds: 4000));
 
           debugPrint("🚀 Sending: ${options.path}");
-
-          handler.next(options);
-
-          // complete AFTER request spacing
-          completer.complete();
+          return handler.next(options);
         },
 
         onResponse: (response, handler) {
           debugPrint("✅ ${response.requestOptions.path}");
+          
+          // Complete the queue turn so the next request can start its delay
+          _completeTurn(response.requestOptions);
+          
           return handler.next(response);
         },
 
         onError: (DioException e, handler) async {
-          if (e.response?.statusCode == 429) {
-            debugPrint("⚠️ 429 hit: ${e.requestOptions.path}");
+          final options = e.requestOptions;
 
-            // global backoff
+          // 429 means rate limit exceeded
+          if (e.response?.statusCode == 429) {
+            debugPrint("⚠️ 429 hit: ${options.path}");
+
+            // Start global backoff if not already active
             if (_backoffFuture == null) {
               final c = Completer<void>();
               _backoffFuture = c.future;
 
-              debugPrint("🛑 Backoff 10s...");
-              Future.delayed(const Duration(seconds: 10), () {
+              debugPrint("🛑 Starting 15s global backoff...");
+              Future.delayed(const Duration(seconds: 15), () {
                 _backoffFuture = null;
                 c.complete();
                 debugPrint("🟢 Backoff cleared");
               });
             }
 
-            // ❌ IMPORTANT: LIMIT RETRIES
-            int retryCount = (e.requestOptions.extra["retry"] ?? 0);
+            // Retry logic
+            int retryCount = (options.extra["retry"] ?? 0);
+            if (retryCount < 2) {
+              options.extra["retry"] = retryCount + 1;
+              debugPrint("🔄 Retrying (${retryCount + 1}/2): ${options.path}");
+              
+              // CRITICAL: Complete the current turn BEFORE re-fetching.
+              // This allows the next request in line to start its wait, 
+              // while this retry goes to the back of the queue.
+              _completeTurn(options);
 
-            if (retryCount >= 2) {
-              debugPrint("❌ Max retry reached: ${e.requestOptions.path}");
-              return handler.next(e);
-            }
+              // Wait for backoff to clear before retrying
+              await _backoffFuture;
 
-            e.requestOptions.extra["retry"] = retryCount + 1;
-
-            // wait before retry
-            await Future.delayed(const Duration(seconds: 5));
-
-            try {
-              final response = await dio.fetch(e.requestOptions);
-              return handler.resolve(response);
-            } catch (_) {
-              return handler.next(e);
+              try {
+                // Re-fetch will go through the queue again
+                final response = await dio.fetch(options);
+                return handler.resolve(response);
+              } catch (retryError) {
+                return handler.next(e);
+              }
             }
           }
 
+          if (e.response?.statusCode == 403) {
+            debugPrint("🚫 403 Forbidden: ${options.path}. Check if your RapidAPI key is valid and subscribed to the Cricbuzz API plan.");
+          }
+
+          // Final failure or non-rate-limit error: complete the turn
+          _completeTurn(options);
+          debugPrint("❌ Failed: ${options.path} [${e.response?.statusCode}]");
           return handler.next(e);
         },
       ),
     );
 
     return dio;
+  }
+
+  static void _completeTurn(RequestOptions options) {
+    final myTurn = options.extra["_myTurn"] as Completer<void>?;
+    if (myTurn != null && !myTurn.isCompleted) {
+      myTurn.complete();
+    }
   }
 }
