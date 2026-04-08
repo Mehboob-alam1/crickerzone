@@ -31,7 +31,11 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
       body: Consumer<PlayerProvider>(
         builder: (context, provider, child) {
           final player = provider.currentPlayer;
-          if (player == null) return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+          if (player == null) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
+          }
 
           return CustomScrollView(
             slivers: [
@@ -44,11 +48,27 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                     children: [
                       _buildMainInfo(player),
                       const SizedBox(height: 32),
-                      const Text('CAREER STATS', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.5, color: AppColors.primary)),
+                      const Text(
+                        'CAREER STATS',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          color: AppColors.primary,
+                        ),
+                      ),
                       const SizedBox(height: 16),
                       _buildStatsGrid(player),
                       const SizedBox(height: 32),
-                      const Text('RECENT FORM', style: TextStyle(fontSize: 14, fontWeight: FontWeight.bold, letterSpacing: 1.5, color: AppColors.primary)),
+                      const Text(
+                        'RECENT FORM',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          letterSpacing: 1.5,
+                          color: AppColors.primary,
+                        ),
+                      ),
                       const SizedBox(height: 16),
                       _buildRecentForm(),
                       const SizedBox(height: 32),
@@ -83,7 +103,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.black.withOpacity(0.1),
+                    Colors.black.withValues(alpha: 0.1),
                     AppColors.background,
                   ],
                 ),
@@ -108,25 +128,41 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                 children: [
                   Text(
                     player.name.toUpperCase(),
-                    style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, letterSpacing: 1, color: AppColors.textPrimary),
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
+                      color: AppColors.textPrimary,
+                    ),
                   ),
                   Text(
                     player.role,
-                    style: const TextStyle(color: AppColors.primary, fontSize: 16, fontWeight: FontWeight.w500),
+                    style: const TextStyle(
+                      color: AppColors.primary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                   ),
                 ],
               ),
             ),
             if (player.team != null)
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 6,
+                ),
                 decoration: BoxDecoration(
                   color: AppColors.primary,
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
                   player.team!,
-                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 12),
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 12,
+                  ),
                 ),
               ),
           ],
@@ -147,8 +183,18 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: const TextStyle(color: AppColors.textMuted, fontSize: 14)),
-          Text(value, style: const TextStyle(color: AppColors.textPrimary, fontSize: 14, fontWeight: FontWeight.w500)),
+          Text(
+            label,
+            style: const TextStyle(color: AppColors.textMuted, fontSize: 14),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              color: AppColors.textPrimary,
+              fontSize: 14,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
         ],
       ),
     );
@@ -156,25 +202,10 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
 
   Widget _buildStatsGrid(player) {
     // If stats are not available yet, we could show a placeholder or just hide it
-    return const Center(child: Text('Career stats available in full subscription', style: TextStyle(color: AppColors.textMuted, fontSize: 12)));
-  }
-
-  Widget _buildStatCard(String label, String value, IconData icon) {
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.textPrimary.withOpacity(0.05)),
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: AppColors.primary.withOpacity(0.5), size: 20),
-          const SizedBox(height: 8),
-          Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColors.textPrimary)),
-          const SizedBox(height: 2),
-          Text(label, style: const TextStyle(color: AppColors.textMuted, fontSize: 10, fontWeight: FontWeight.bold)),
-        ],
+    return const Center(
+      child: Text(
+        'Career stats available in full subscription',
+        style: TextStyle(color: AppColors.textMuted, fontSize: 12),
       ),
     );
   }
@@ -190,9 +221,15 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
           width: 60,
           margin: const EdgeInsets.only(right: 12),
           decoration: BoxDecoration(
-            color: index == 0 ? AppColors.primary.withOpacity(0.2) : AppColors.surface,
+            color: index == 0
+                ? AppColors.primary.withValues(alpha: 0.2)
+                : AppColors.surface,
             borderRadius: BorderRadius.circular(12),
-            border: Border.all(color: index == 0 ? AppColors.primary : AppColors.textPrimary.withOpacity(0.05)),
+            border: Border.all(
+              color: index == 0
+                  ? AppColors.primary
+                  : AppColors.textPrimary.withValues(alpha: 0.05),
+            ),
           ),
           child: Center(
             child: Text(

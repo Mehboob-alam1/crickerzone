@@ -1,6 +1,6 @@
 class ApiConstants {
   static const String baseUrl = 'https://cricbuzz-cricket.p.rapidapi.com';
-  static const String apiKey = '8add5b416bmsh302335908d6f4b6p1b5533jsn22c31496663f';
+  static const String apiKey = '4fe6932e3fmsh06018939df7de54p17d603jsn691454312c4';
   static const String apiHost = 'cricbuzz-cricket.p.rapidapi.com';
 
   static Map<String, String> get headers => {

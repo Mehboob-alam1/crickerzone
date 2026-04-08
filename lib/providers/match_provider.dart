@@ -10,6 +10,7 @@ class MatchProvider with ChangeNotifier {
   Map<String, dynamic>? _matchScorecard;
   Map<String, dynamic>? _matchCommentary;
   Map<String, dynamic>? _matchInfo;
+  Map<String, dynamic>? _matchOvers;
 
   List<MatchModel> get matches => _matches;
   List<MatchScheduleModel> get matchSchedules => _matchSchedules;
@@ -17,6 +18,7 @@ class MatchProvider with ChangeNotifier {
   Map<String, dynamic>? get matchScorecard => _matchScorecard;
   Map<String, dynamic>? get matchCommentary => _matchCommentary;
   Map<String, dynamic>? get matchInfo => _matchInfo;
+  Map<String, dynamic>? get matchOvers => _matchOvers;
 
   List<MatchModel> get liveMatches => _matches.where((m) => m.matchType == 'Live').toList();
   List<MatchModel> get upcomingMatches => _matches.where((m) => m.matchType == 'Upcoming').toList();
@@ -81,7 +83,7 @@ class MatchProvider with ChangeNotifier {
                 if (matches != null) {
                   for (var m in (matches as List)) {
                     if (m['matchInfo'] != null) {
-                      list.add(MatchModel.fromJson(m['matchInfo'], type));
+                      list.add(MatchModel.fromJson(m, type));
                     }
                   }
                 }
@@ -102,14 +104,17 @@ class MatchProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      // Fetching sequentially with a small delay to avoid 429 Rate Limit
+      // Fetching with small delays to avoid 429 Rate Limit
       _matchScorecard = await MatchApi.getScorecard(matchId);
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 300));
       
       _matchCommentary = await MatchApi.getCommentary(matchId);
-      await Future.delayed(const Duration(milliseconds: 500));
+      await Future.delayed(const Duration(milliseconds: 300));
       
       _matchInfo = await MatchApi.getMatchInfo(matchId);
+      await Future.delayed(const Duration(milliseconds: 300));
+
+      _matchOvers = await MatchApi.getOvers(matchId);
     } catch (e) {
       debugPrint('Error fetching match details: $e');
     } finally {
@@ -122,6 +127,7 @@ class MatchProvider with ChangeNotifier {
     _matchScorecard = null;
     _matchCommentary = null;
     _matchInfo = null;
+    _matchOvers = null;
   }
 }
 

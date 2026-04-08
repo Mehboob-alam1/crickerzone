@@ -31,7 +31,7 @@ class MatchCard extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
             side: BorderSide(
-              color: isLive ? AppColors.primary.withOpacity(0.2) : AppColors.textPrimary.withOpacity(0.05),
+              color: isLive ? AppColors.primary.withValues(alpha: 0.2) : AppColors.textPrimary.withValues(alpha: 0.05),
               width: 1,
             ),
           ),
@@ -113,14 +113,21 @@ class MatchCard extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: CachedNetworkImage(
-            imageUrl: logoUrl,
-            width: 32,
-            height: 32,
-            fit: BoxFit.cover,
-            placeholder: (context, url) => Container(width: 32, height: 32, color: Colors.white10),
-            errorWidget: (context, url, error) => const Icon(Icons.flag, size: 24, color: AppColors.textMuted),
-          ),
+          child: logoUrl.isEmpty
+              ? Container(
+                  width: 32,
+                  height: 32,
+                  color: Colors.white10,
+                  child: const Icon(Icons.flag, size: 20, color: AppColors.textMuted),
+                )
+              : CachedNetworkImage(
+                  imageUrl: logoUrl,
+                  width: 32,
+                  height: 32,
+                  fit: BoxFit.cover,
+                  placeholder: (context, url) => Container(width: 32, height: 32, color: Colors.white10),
+                  errorWidget: (context, url, error) => const Icon(Icons.flag, size: 24, color: AppColors.textMuted),
+                ),
         ),
         const SizedBox(width: 12),
         Expanded(

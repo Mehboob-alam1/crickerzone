@@ -88,7 +88,7 @@ class _TeamDetailScreenState extends State<TeamDetailScreen> {
                         end: Alignment.bottomCenter,
                         colors: [
                           Colors.transparent,
-                          AppColors.background.withOpacity(0.8),
+                          AppColors.background.withValues(alpha: 0.8),
                         ],
                       ),
                     ),
@@ -131,7 +131,7 @@ class _TeamDetailScreenState extends State<TeamDetailScreen> {
                           child: ListTile(
                             contentPadding: EdgeInsets.zero,
                             leading: CircleAvatar(
-                              backgroundColor: AppColors.primary.withOpacity(0.1),
+                              backgroundColor: AppColors.primary.withValues(alpha: 0.1),
                               backgroundImage: player['faceImageId'] != null
                                   ? CachedNetworkImageProvider('https://static.cricbuzz.com/a/img/v1/i1/c${player['faceImageId']}/i.jpg')
                                   : null,

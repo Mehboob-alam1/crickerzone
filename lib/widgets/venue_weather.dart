@@ -32,7 +32,7 @@ class VenueWeatherWidget extends StatelessWidget {
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(16),
-              border: Border.all(color: AppColors.textPrimary.withOpacity(0.05)),
+              border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.05)),
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,

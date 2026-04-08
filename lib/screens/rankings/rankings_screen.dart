@@ -99,7 +99,7 @@ class _RankingsScreenState extends State<RankingsScreen> {
             decoration: BoxDecoration(
               color: AppColors.surface,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.textPrimary.withOpacity(0.05)),
+              border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.05)),
             ),
             child: Row(
               children: [

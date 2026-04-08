@@ -1,16 +1,14 @@
+import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../core/constants/api_constants.dart';
 
 class ApiService {
   static const String baseUrl = ApiConstants.baseUrl;
-  
   static String _apiKey = ApiConstants.apiKey;
 
-  static void setApiKey(String key) {
-    _apiKey = key;
-    _updateDio();
-  }
+  static Future<void> _requestQueue = Future.value();
+  static Future<void>? _backoffFuture;
 
   static Dio dio = _createDio();
 
@@ -20,7 +18,7 @@ class ApiService {
         baseUrl: baseUrl,
         headers: {
           "X-Rapidapi-Key": _apiKey,
-          "X-Rapidapi-Host": "cricbuzz-cricket.p.rapidapi.com",
+          "X-Rapidapi-Host": ApiConstants.apiHost,
           "Content-Type": "application/json",
         },
         connectTimeout: const Duration(seconds: 30),
@@ -28,36 +26,83 @@ class ApiService {
       ),
     );
 
-    dio.interceptors.add(InterceptorsWrapper(
-      onRequest: (options, handler) async {
-        // Add a small delay before every request to respect the 1 req/sec limit
-        await Future.delayed(const Duration(milliseconds: 1100));
-        return handler.next(options);
-      },
-      onError: (DioException e, handler) async {
-        if (e.response?.statusCode == 429) {
-          // If we still get a 429, wait longer and retry once
-          debugPrint("Rate limit hit (429). Retrying in 2 seconds...");
-          await Future.delayed(const Duration(seconds: 2));
-          final response = await dio.fetch(e.requestOptions);
-          return handler.resolve(response);
-        }
-        return handler.next(e);
-      },
-    ));
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) async {
+          debugPrint("⏳ Queue: ${options.path}");
 
-    dio.interceptors.add(LogInterceptor(
-      requestHeader: false,
-      responseHeader: false,
-      requestBody: true,
-      responseBody: true,
-      logPrint: (obj) => debugPrint(obj.toString()),
-    ));
+          final previous = _requestQueue;
+          final completer = Completer<void>();
+          _requestQueue = completer.future;
+
+          // wait previous request
+          await previous;
+
+          // wait global backoff
+          if (_backoffFuture != null) {
+            debugPrint("⏳ Waiting backoff...");
+            await _backoffFuture;
+          }
+
+          // delay BEFORE request (important)
+          await Future.delayed(const Duration(seconds: 2));
+
+          debugPrint("🚀 Sending: ${options.path}");
+
+          handler.next(options);
+
+          // complete AFTER request spacing
+          completer.complete();
+        },
+
+        onResponse: (response, handler) {
+          debugPrint("✅ ${response.requestOptions.path}");
+          return handler.next(response);
+        },
+
+        onError: (DioException e, handler) async {
+          if (e.response?.statusCode == 429) {
+            debugPrint("⚠️ 429 hit: ${e.requestOptions.path}");
+
+            // global backoff
+            if (_backoffFuture == null) {
+              final c = Completer<void>();
+              _backoffFuture = c.future;
+
+              debugPrint("🛑 Backoff 10s...");
+              Future.delayed(const Duration(seconds: 10), () {
+                _backoffFuture = null;
+                c.complete();
+                debugPrint("🟢 Backoff cleared");
+              });
+            }
+
+            // ❌ IMPORTANT: LIMIT RETRIES
+            int retryCount = (e.requestOptions.extra["retry"] ?? 0);
+
+            if (retryCount >= 2) {
+              debugPrint("❌ Max retry reached: ${e.requestOptions.path}");
+              return handler.next(e);
+            }
+
+            e.requestOptions.extra["retry"] = retryCount + 1;
+
+            // wait before retry
+            await Future.delayed(const Duration(seconds: 5));
+
+            try {
+              final response = await dio.fetch(e.requestOptions);
+              return handler.resolve(response);
+            } catch (_) {
+              return handler.next(e);
+            }
+          }
+
+          return handler.next(e);
+        },
+      ),
+    );
 
     return dio;
-  }
-
-  static void _updateDio() {
-    dio = _createDio();
   }
 }

@@ -69,7 +69,7 @@ class OversTimelineWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.surface,
         borderRadius: BorderRadius.circular(15),
-        border: Border.all(color: AppColors.textPrimary.withOpacity(0.1)),
+        border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.1)),
       ),
       child: Center(
         child: Text(val,

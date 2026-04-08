@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'api_service.dart';
 
 class PhotoApi {
@@ -8,7 +9,7 @@ class PhotoApi {
       final response = await ApiService.dio.get("/photos/v1/index");
       return response.data['photoGalleryInfoList'] ?? [];
     } catch (e) {
-      print("Error Photos List: $e");
+      log("Error Photos List: $e");
       return [];
     }
   }
@@ -20,7 +21,7 @@ class PhotoApi {
       await ApiService.dio.get("/photos/v1/detail/$photoId");
       return response.data;
     } catch (e) {
-      print("Error Photo Detail: $e");
+      log("Error Photo Detail: $e");
       return null;
     }
   }

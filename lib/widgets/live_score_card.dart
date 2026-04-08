@@ -19,10 +19,10 @@ class LiveScoreCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: AppColors.primary.withOpacity(0.2)),
+          border: Border.all(color: AppColors.primary.withValues(alpha: 0.2)),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.2),
+              color: Colors.black.withValues(alpha: 0.2),
               blurRadius: 10,
               offset: const Offset(0, 4),
             ),
@@ -34,7 +34,7 @@ class LiveScoreCard extends StatelessWidget {
             children: [
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                color: AppColors.secondary.withOpacity(0.15),
+                color: AppColors.secondary.withValues(alpha: 0.15),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
@@ -85,13 +85,20 @@ class LiveScoreCard extends StatelessWidget {
       children: [
         ClipRRect(
           borderRadius: BorderRadius.circular(8),
-          child: CachedNetworkImage(
-            imageUrl: logo,
-            width: 32,
-            height: 32,
-            placeholder: (context, url) => Container(color: Colors.white12),
-            errorWidget: (context, url, error) => const Icon(Icons.flag, size: 24, color: AppColors.textMuted),
-          ),
+          child: logo.isEmpty
+              ? Container(
+                  width: 32,
+                  height: 32,
+                  color: Colors.white12,
+                  child: const Icon(Icons.flag, size: 20, color: AppColors.textMuted),
+                )
+              : CachedNetworkImage(
+                  imageUrl: logo,
+                  width: 32,
+                  height: 32,
+                  placeholder: (context, url) => Container(color: Colors.white12),
+                  errorWidget: (context, url, error) => const Icon(Icons.flag, size: 24, color: AppColors.textMuted),
+                ),
         ),
         const SizedBox(width: 12),
         Expanded(child: Text(name, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 14, color: AppColors.textPrimary))),

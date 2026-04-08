@@ -33,7 +33,7 @@ class PlayerModel {
     return PlayerModel(
       id: json['id']?.toString() ?? json['playerId']?.toString() ?? '',
       name: json['name'] ?? '',
-      role: json['role'] ?? '',
+      role: json['role'] ?? json['teamName'] ?? '',
       image: (json['faceImageId'] != null || json['imageId'] != null)
           ? 'https://static.cricbuzz.com/a/img/v1/i1/c${json['faceImageId'] ?? json['imageId']}/i.jpg'
           : '',
@@ -42,8 +42,8 @@ class PlayerModel {
       height: json['height'],
       batStyle: json['bat'],
       bowlStyle: json['bowl'],
-      team: json['intlTeam'],
-      runs: json['runs']?.toString() ?? 'N/A',
+      team: json['teamName'] ?? json['intlTeam'],
+      // runs: json['runs']?.toString() ?? 'N/A',
       average: json['avg']?.toString() ?? 'N/A',
     );
   }

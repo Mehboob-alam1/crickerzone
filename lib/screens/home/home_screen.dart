@@ -4,7 +4,7 @@ import 'package:animate_do/animate_do.dart';
 import 'package:go_router/go_router.dart';
 import 'package:score_zone/core/constants/colors.dart';
 import 'package:score_zone/providers/match_provider.dart';
-import 'package:score_zone/widgets/match_card.dart';
+import 'package:score_zone/widgets/live_score_card.dart';
 import 'package:score_zone/widgets/section_header.dart';
 import 'package:score_zone/widgets/category_item.dart';
 import 'package:score_zone/widgets/drawer_item.dart';
@@ -16,6 +16,8 @@ import 'package:score_zone/screens/rankings/rankings_screen.dart';
 import 'package:score_zone/screens/videos/videos_screen.dart';
 import 'package:score_zone/screens/notifications/notifications_screen.dart';
 import 'package:score_zone/screens/about/about_screen.dart';
+
+import '../../widgets/match_card.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -423,16 +425,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildLiveMatchesList(MatchProvider provider) {
     return SizedBox(
-      height: 220,
+      height: 200,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 16),
         physics: const BouncingScrollPhysics(),
         itemCount: provider.liveMatches.length,
-        itemBuilder: (context, index) => FadeInRight(
-          delay: Duration(milliseconds: 200 * index),
-          child: MatchCard(match: provider.liveMatches[index], isLive: true),
-        ),
+        itemBuilder: (context, index) {
+          final match = provider.liveMatches[index];
+          return FadeInRight(
+            delay: Duration(milliseconds: 200 * index),
+            child: LiveScoreCard(
+              match: match,
+              onTap: () => context.push('/match/${match.id}'),
+            ),
+          );
+        },
       ),
     );
   }

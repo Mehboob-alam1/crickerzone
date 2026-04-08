@@ -6,7 +6,7 @@ import '../../core/constants/colors.dart';
 import '../../providers/match_provider.dart';
 import '../../models/match_model.dart';
 import '../../widgets/win_prediction.dart';
-import '../../widgets/overs_timeline.dart';
+import 'package:intl/intl.dart';
 
 class MatchDetailScreen extends StatefulWidget {
   final String matchId;
@@ -150,28 +150,202 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
 
   Widget _buildLiveView(MatchModel match, MatchProvider provider) {
     if (provider.isLoading && provider.matchInfo == null) {
-      return const Center(child: CircularProgressIndicator());
+      return const Center(child: CircularProgressIndicator(color: AppColors.primary));
     }
-    
+
+    final miniscore = provider.matchScorecard?['miniscore'];
+    final crr = miniscore?['crr']?.toString() ?? '0.00';
+    final rrr = miniscore?['rrr']?.toString() ?? '0.00';
+    final target = miniscore?['target']?.toString() ?? '-';
+    final status = miniscore?['status'] ?? match.status;
+
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       child: Column(
         children: [
-          FadeInDown(child: _buildLiveStatsRow(provider)),
-          FadeInDown(delay: const Duration(milliseconds: 100), child: _buildStatusMessage(match)),
+          FadeInDown(child: _buildStatsHeader(crr, rrr, target)),
+          FadeInDown(
+            delay: const Duration(milliseconds: 100),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              child: Text(
+                status,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.redAccent, fontSize: 13, fontWeight: FontWeight.w600),
+              ),
+            ),
+          ),
           FadeInUp(
             delay: const Duration(milliseconds: 200),
             child: WinPredictionWidget(
               teamA: match.teamA,
               teamB: match.teamB,
-              percentageA: 60, // Ideally from API
+              percentageA: 60, // Ideally from API if available
               percentageB: 40,
             ),
           ),
-          FadeInUp(delay: const Duration(milliseconds: 400), child: _buildBowlerTable(provider)),
-          FadeInUp(delay: const Duration(milliseconds: 500), child: _buildOnCreaseSection(provider)),
+          if (provider.matchOvers != null)
+            FadeInUp(delay: const Duration(milliseconds: 300), child: _buildOversTimeline(provider.matchOvers!)),
+          
+          FadeInUp(delay: const Duration(milliseconds: 400), child: _buildBowlerSection(miniscore?['bowlerStrip'])),
+          FadeInUp(delay: const Duration(milliseconds: 500), child: _buildBatterSection(miniscore?['batsmanStrip'], miniscore?['partnership'])),
+          
           FadeInUp(delay: const Duration(milliseconds: 600), child: _buildLargeScoreDisplay(match)),
           const SizedBox(height: 20),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatsHeader(String crr, String rrr, String target) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 24),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _buildStatItem('CRR', crr),
+          _buildStatItem('RRR', rrr),
+          _buildStatItem('Target', target),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatItem(String label, String value) {
+    return Column(
+      children: [
+        Text(label, style: const TextStyle(color: AppColors.textMuted, fontSize: 12, fontWeight: FontWeight.bold)),
+        const SizedBox(height: 4),
+        Text(value, style: const TextStyle(color: AppColors.textPrimary, fontSize: 18, fontWeight: FontWeight.bold)),
+      ],
+    );
+  }
+
+  Widget _buildOversTimeline(Map<String, dynamic> oversData) {
+    final overSummary = oversData['overSummaryList'] as List?;
+    if (overSummary == null || overSummary.isEmpty) return const SizedBox.shrink();
+
+    final lastOver = overSummary.first;
+    final balls = lastOver['balls'] as List? ?? [];
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text('Overs Timeline', style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Text('OVER ${lastOver['overNum']}', style: const TextStyle(color: AppColors.textMuted, fontSize: 12, fontWeight: FontWeight.bold)),
+              const SizedBox(width: 12),
+              Expanded(
+                child: SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: balls.map((ball) {
+                      return Container(
+                        margin: const EdgeInsets.only(right: 8),
+                        width: 30,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          shape: BoxShape.circle,
+                          border: Border.all(color: AppColors.textPrimary.withValues(alpha: 0.1)),
+                        ),
+                        child: Center(
+                          child: Text(
+                            ball.toString(),
+                            style: const TextStyle(color: AppColors.textPrimary, fontSize: 12, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const Divider(height: 32, color: Colors.white10),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBowlerSection(List? bowlers) {
+    if (bowlers == null || bowlers.isEmpty) return const SizedBox.shrink();
+    
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              children: [
+                Expanded(flex: 3, child: Text('Bowler', style: TextStyle(color: AppColors.textMuted, fontSize: 11))),
+                Expanded(child: Text('Wkt-Runs', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textMuted, fontSize: 11))),
+                Expanded(child: Text('Overs', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textMuted, fontSize: 11))),
+                Expanded(child: Text('Econ', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textMuted, fontSize: 11))),
+              ],
+            ),
+          ),
+          ...bowlers.map((b) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              children: [
+                Expanded(flex: 3, child: Text(b['name'] ?? '', style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w500))),
+                Expanded(child: Text("${b['wickets']}-${b['runs']}", textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textPrimary, fontSize: 13))),
+                Expanded(child: Text(b['overs']?.toString() ?? '', textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textPrimary, fontSize: 13))),
+                Expanded(child: Text(b['economy']?.toString() ?? '', textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textPrimary, fontSize: 13))),
+              ],
+            ),
+          )),
+          const Divider(height: 24, color: Colors.white10),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBatterSection(List? batters, Map? partnership) {
+    if (batters == null || batters.isEmpty) return const SizedBox.shrink();
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Text('On Crease', style: TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.bold)),
+              if (partnership != null)
+                Text(' - Partnership: ${partnership['runs']} (${partnership['balls']})', 
+                    style: const TextStyle(color: AppColors.textMuted, fontSize: 12)),
+            ],
+          ),
+          const SizedBox(height: 12),
+          const Row(
+            children: [
+              Expanded(flex: 3, child: Text('Batter', style: TextStyle(color: AppColors.textMuted, fontSize: 11))),
+              Expanded(child: Text('Run (Ball)', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textMuted, fontSize: 11))),
+              Expanded(child: Text('4s', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textMuted, fontSize: 11))),
+              Expanded(child: Text('6s', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textMuted, fontSize: 11))),
+              Expanded(child: Text('Strike', textAlign: TextAlign.center, style: TextStyle(color: AppColors.textMuted, fontSize: 11))),
+            ],
+          ),
+          ...batters.map((b) => Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            child: Row(
+              children: [
+                Expanded(flex: 3, child: Text(b['name'] ?? '', style: const TextStyle(color: AppColors.textPrimary, fontSize: 13, fontWeight: FontWeight.w500))),
+                Expanded(child: Text("${b['runs']} (${b['balls']})", textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textPrimary, fontSize: 13))),
+                Expanded(child: Text(b['fours']?.toString() ?? '0', textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textPrimary, fontSize: 13))),
+                Expanded(child: Text(b['sixes']?.toString() ?? '0', textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textPrimary, fontSize: 13))),
+                Expanded(child: Text(b['strikeRate']?.toString() ?? '0', textAlign: TextAlign.center, style: const TextStyle(color: AppColors.textPrimary, fontSize: 13))),
+              ],
+            ),
+          )),
+          const Divider(height: 24, color: Colors.white10),
         ],
       ),
     );
@@ -344,44 +518,6 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
     );
   }
 
-  Widget _buildLiveStatsRow(MatchProvider provider) {
-    // In a real app, extract RR, RRR, Target from matchScore or matchInfo
-    return const Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-           Column(
-            children: [
-              Text("DATA", style: TextStyle(color: AppColors.textMuted, fontSize: 11)),
-              SizedBox(height: 4),
-              Text("LIVE", style: TextStyle(color: AppColors.textPrimary, fontWeight: FontWeight.bold, fontSize: 16)),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatusMessage(MatchModel match) {
-    return Container(
-      width: double.infinity,
-      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      child: Text(
-        match.status,
-        textAlign: TextAlign.center,
-        style: const TextStyle(color: AppColors.secondary, fontSize: 14, fontWeight: FontWeight.w600),
-      ),
-    );
-  }
-
-  Widget _buildBowlerTable(MatchProvider provider) {
-    return const SizedBox.shrink(); // Simplified for brevity
-  }
-
-  Widget _buildOnCreaseSection(MatchProvider provider) {
-    return const SizedBox.shrink(); // Simplified for brevity
-  }
 
   Widget _buildLargeScoreDisplay(MatchModel match) {
     return Container(
@@ -434,10 +570,17 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
         children: [
           const Text('Match Information', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.textPrimary)),
           const SizedBox(height: 16),
+          _buildInfoRow('Toss', matchInfo['toss'] ?? 'N/A'),
           _buildInfoRow('Series', matchInfo['seriesName'] ?? 'N/A'),
+          _buildInfoRow('Season', matchInfo['season'] ?? 'N/A'),
+          _buildInfoRow('Match Number', matchInfo['matchNum']?.toString() ?? 'N/A'),
           _buildInfoRow('Venue', "${venueInfo['ground'] ?? ''}, ${venueInfo['city'] ?? ''}"),
-          _buildInfoRow('Format', matchInfo['matchFormat'] ?? 'N/A'),
-          _buildInfoRow('Status', matchInfo['status'] ?? 'N/A'),
+          _buildInfoRow('Match Days', matchInfo['matchStartTimestamp'] != null 
+              ? DateFormat('dd MMMM yyyy').format(DateTime.fromMillisecondsSinceEpoch(int.parse(matchInfo['matchStartTimestamp'].toString())))
+              : 'N/A'),
+          _buildInfoRow('Umpires', matchInfo['umpire1']?['name'] ?? 'N/A'),
+          _buildInfoRow('TV Umpire', matchInfo['umpire3']?['name'] ?? 'N/A'),
+          _buildInfoRow('Match Referee', matchInfo['referee']?['name'] ?? 'N/A'),
           const SizedBox(height: 40),
         ],
       ),

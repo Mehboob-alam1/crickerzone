@@ -33,6 +33,7 @@ class TeamProvider with ChangeNotifier {
   Future<List<dynamic>> fetchTeamMatches(String teamId) async {
     try {
       final response = await TeamApi.getTeamMatches(teamId);
+      if (response == null) return [];
       return response['schedule'] ?? [];
     } catch (e) {
       debugPrint('Error fetching team matches: $e');
@@ -43,6 +44,7 @@ class TeamProvider with ChangeNotifier {
   Future<List<dynamic>> fetchTeamPlayers(String teamId) async {
     try {
       final response = await TeamApi.getTeamPlayers(teamId);
+      if (response == null) return [];
       return response['player'] ?? [];
     } catch (e) {
       debugPrint('Error fetching team players: $e');

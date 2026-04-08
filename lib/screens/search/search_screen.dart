@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:go_router/go_router.dart';
 import '../../core/constants/colors.dart';
 import '../../providers/player_provider.dart';
 import '../../widgets/player_card.dart';
@@ -69,7 +68,7 @@ class _SearchScreenState extends State<SearchScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.search, size: 80, color: AppColors.surface),
+                  const Icon(Icons.search, size: 80, color: AppColors.surface),
                   const SizedBox(height: 16),
                   Text(
                     _searchController.text.isEmpty

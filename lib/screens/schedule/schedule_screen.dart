@@ -99,7 +99,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
                       series: series,
                       match: match,
                     ));
-              }).toList(),
+              }),
             ],
           );
         },

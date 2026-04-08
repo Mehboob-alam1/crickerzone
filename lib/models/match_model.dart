@@ -36,31 +36,50 @@ class MatchModel {
     final score = json['matchScore'] ?? {};
     
     String getScore(Map<String, dynamic> teamScore) {
-      final inngs = teamScore['inngs1'];
-      if (inngs == null) return '-';
-      return '${inngs['runs']}/${inngs['wickets']}';
+      final inngs1 = teamScore['inngs1'];
+      final inngs2 = teamScore['inngs2'];
+      
+      if (inngs1 == null) return '-';
+      
+      String res = '${inngs1['runs']}/${inngs1['wickets']}';
+      if (inngs2 != null) {
+        res += ' & ${inngs2['runs']}/${inngs2['wickets']}';
+      }
+      return res;
     }
 
     String getOvers(Map<String, dynamic> teamScore) {
-      final inngs = teamScore['inngs1'];
-      if (inngs == null) return '-';
-      return '${inngs['overs']}';
+      final inngs1 = teamScore['inngs1'];
+      final inngs2 = teamScore['inngs2'];
+      
+      if (inngs1 == null) return '-';
+      
+      String res = '${inngs1['overs']}';
+      if (inngs2 != null) {
+        res += ' & ${inngs2['overs']}';
+      }
+      return res;
     }
+
+    final team1ImageId = info['team1']?['imageId'];
+    final team2ImageId = info['team2']?['imageId'];
 
     return MatchModel(
       id: info['matchId']?.toString() ?? '',
       teamA: info['team1']?['teamName'] ?? 'TBA',
       teamB: info['team2']?['teamName'] ?? 'TBA',
-      teamALogo: 'https://static.cricbuzz.com/a/img/v1/i1/c${info['team1']?['imageId']}/i.jpg',
-      teamBLogo: 'https://static.cricbuzz.com/a/img/v1/i1/c${info['team2']?['imageId']}/i.jpg',
+      teamALogo: team1ImageId != null ? 'https://static.cricbuzz.com/a/img/v1/i1/c$team1ImageId/i.jpg' : '',
+      teamBLogo: team2ImageId != null ? 'https://static.cricbuzz.com/a/img/v1/i1/c$team2ImageId/i.jpg' : '',
       scoreA: getScore(score['team1Score'] ?? {}),
       oversA: getOvers(score['team1Score'] ?? {}),
       scoreB: getScore(score['team2Score'] ?? {}),
       oversB: getOvers(score['team2Score'] ?? {}),
       status: info['status'] ?? '',
       matchType: type,
-      venue: '${info['venueInfo']?['ground']}, ${info['venueInfo']?['city']}',
-      time: info['startDate'] != null ? DateTime.fromMillisecondsSinceEpoch(int.parse(info['startDate'])).toString() : 'TBA',
+      venue: info['venueInfo'] != null ? '${info['venueInfo']?['ground']}, ${info['venueInfo']?['city']}' : 'TBA',
+      time: info['startDate'] != null 
+          ? DateTime.fromMillisecondsSinceEpoch(int.tryParse(info['startDate'].toString()) ?? 0).toString() 
+          : 'TBA',
       series: info['seriesName'] ?? '',
     );
   }

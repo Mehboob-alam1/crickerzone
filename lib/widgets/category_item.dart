@@ -38,7 +38,7 @@ class CategoryItem extends StatelessWidget {
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: color.withOpacity(0.1),
+                      color: color.withValues(alpha: 0.1),
                       blurRadius: 10,
                       spreadRadius: 2,
                     )

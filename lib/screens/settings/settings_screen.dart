@@ -41,7 +41,12 @@ class SettingsScreen extends StatelessWidget {
       leading: Icon(icon, color: AppColors.textSecondary),
       title: Text(title),
       trailing: isSwitch 
-        ? Switch(value: true, onChanged: (v) {}, activeColor: AppColors.primary)
+        ? Switch(
+            value: true, 
+            onChanged: (v) {}, 
+            activeThumbColor: AppColors.primary,
+            activeTrackColor: AppColors.primary.withValues(alpha: 0.5),
+          )
         : Text(trailing, style: const TextStyle(color: AppColors.textMuted)),
       onTap: () {},
     );
