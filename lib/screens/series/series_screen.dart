@@ -41,7 +41,7 @@ class _SeriesScreenState extends State<SeriesScreen> {
           }
 
           return RefreshIndicator(
-            onRefresh: () => provider.fetchInternationalSeries(),
+            onRefresh: () => provider.fetchInternationalSeries(forceRefresh: true),
             color: AppColors.primary,
             child: ListView.builder(
               padding: const EdgeInsets.all(16),

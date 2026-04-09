@@ -9,13 +9,13 @@ class TeamProvider with ChangeNotifier {
   List<TeamModel> get teams => _teams;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchTeams() async {
+  Future<void> fetchTeams({bool forceRefresh = false}) async {
     if (_isLoading) return;
     _isLoading = true;
     notifyListeners();
 
     try {
-      final response = await TeamApi.getTeams();
+      final response = await TeamApi.getTeams(forceRefresh: forceRefresh);
       if (response != null && response['list'] != null) {
         _teams = (response['list'] as List)
             .map((e) => Map<String, dynamic>.from(e as Map))

@@ -2,6 +2,9 @@ import 'dart:async';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import '../core/constants/api_constants.dart';
+import 'api_cache_service.dart';
+
+export 'api_cache_service.dart' show CacheTtls;
 
 class ApiService {
   static const String baseUrl = ApiConstants.baseUrl;
@@ -130,5 +133,34 @@ class ApiService {
     if (myTurn != null && !myTurn.isCompleted) {
       myTurn.complete();
     }
+  }
+
+  /// GET with local cache. On hit, returns immediately (no network, no queue delay).
+  static Future<dynamic> getCached(
+    String path, {
+    Map<String, dynamic>? queryParameters,
+    Duration ttl = const Duration(minutes: 15),
+    bool forceRefresh = false,
+  }) async {
+    final key =
+        ApiCacheService.instance.cacheKey(path, queryParameters);
+    if (!forceRefresh) {
+      final cached = await ApiCacheService.instance.read(key);
+      if (cached != null) {
+        if (kDebugMode) {
+          debugPrint('📦 Cache hit: $path');
+        }
+        return cached;
+      }
+    }
+    final response = await dio.get(
+      path,
+      queryParameters: queryParameters,
+    );
+    final data = response.data;
+    if (data != null) {
+      await ApiCacheService.instance.write(key, data, ttl);
+    }
+    return data;
   }
 }

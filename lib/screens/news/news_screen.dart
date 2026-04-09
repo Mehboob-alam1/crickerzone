@@ -52,7 +52,7 @@ class _NewsScreenState extends State<NewsScreen> {
                 leading: const Icon(Icons.list_alt, color: AppColors.primary),
                 onTap: () {
                   Navigator.pop(ctx);
-                  provider.fetchNews();
+                  provider.fetchNews(forceRefresh: true);
                 },
               ),
               ConstrainedBox(
@@ -72,7 +72,7 @@ class _NewsScreenState extends State<NewsScreen> {
                       title: Text(name, style: const TextStyle(color: AppColors.textPrimary)),
                       onTap: () {
                         Navigator.pop(ctx);
-                        provider.fetchNewsByCategory(cid);
+                        provider.fetchNewsByCategory(cid, forceRefresh: true);
                       },
                     );
                   },
@@ -104,25 +104,61 @@ class _NewsScreenState extends State<NewsScreen> {
       ),
       body: Consumer<NewsProvider>(
         builder: (context, provider, child) {
+          Future<void> onNewsRefresh() async {
+            await provider.fetchCategories(forceRefresh: true);
+            final cid = provider.activeCategoryId;
+            if (cid != null) {
+              await provider.fetchNewsByCategory(cid, forceRefresh: true);
+            } else {
+              await provider.fetchNews(forceRefresh: true);
+            }
+          }
+
           if (provider.isLoading) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+            return RefreshIndicator(
+              onRefresh: onNewsRefresh,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(
+                    height: 320,
+                    child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                  ),
+                ],
+              ),
+            );
           }
 
           if (provider.newsList.isEmpty) {
-            return const Center(child: Text('Nessuna news', style: TextStyle(color: AppColors.textMuted)));
+            return RefreshIndicator(
+              onRefresh: onNewsRefresh,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(
+                    height: 240,
+                    child: Center(
+                      child: Text('Nessuna news', style: TextStyle(color: AppColors.textMuted)),
+                    ),
+                  ),
+                ],
+              ),
+            );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: provider.newsList.length,
-            itemBuilder: (context, index) {
-              final news = provider.newsList[index];
+          return RefreshIndicator(
+            onRefresh: onNewsRefresh,
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: provider.newsList.length,
+              itemBuilder: (context, index) {
+                final news = provider.newsList[index];
 
-              return FadeInUp(
-                delay: Duration(milliseconds: 100 * index),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
+                return FadeInUp(
+                  delay: Duration(milliseconds: 100 * index),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
                     onTap: () => context.push('/news/article/${news.id}'),
                     borderRadius: BorderRadius.circular(16),
                     child: Container(
@@ -221,6 +257,7 @@ class _NewsScreenState extends State<NewsScreen> {
                 ),
               );
             },
+            ),
           );
         },
       ),

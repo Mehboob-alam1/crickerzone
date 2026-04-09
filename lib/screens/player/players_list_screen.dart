@@ -32,21 +32,57 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
       ),
       body: Consumer<PlayerProvider>(
         builder: (context, provider, child) {
-          final players = provider.trendingPlayers;
-          
-          if (players.isEmpty) {
-            return const Center(child: CircularProgressIndicator(color: AppColors.primary));
+          Future<void> onRefresh() =>
+              context.read<PlayerProvider>().fetchTrendingPlayers(forceRefresh: true);
+
+          if (provider.isLoading && provider.trendingPlayers.isEmpty) {
+            return RefreshIndicator(
+              onRefresh: onRefresh,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(
+                    height: 400,
+                    child: Center(child: CircularProgressIndicator(color: AppColors.primary)),
+                  ),
+                ],
+              ),
+            );
           }
 
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: players.length,
-            itemBuilder: (context, index) {
-              return PlayerCard(
-                player: players[index],
-                index: index,
-              );
-            },
+          final players = provider.trendingPlayers;
+          if (players.isEmpty) {
+            return RefreshIndicator(
+              onRefresh: onRefresh,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(
+                    height: 240,
+                    child: Center(
+                      child: Text(
+                        'Nessun giocatore in evidenza',
+                        style: TextStyle(color: AppColors.textMuted),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: onRefresh,
+            child: ListView.builder(
+              padding: const EdgeInsets.all(16),
+              itemCount: players.length,
+              itemBuilder: (context, index) {
+                return PlayerCard(
+                  player: players[index],
+                  index: index,
+                );
+              },
+            ),
           );
         },
       ),

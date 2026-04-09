@@ -63,10 +63,13 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           final imageUrl = newsCoverImageUrl(d);
           final paragraphs = parseNewsDetailParagraphs(d);
 
-          return SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
+          return RefreshIndicator(
+            onRefresh: () => provider.fetchNewsDetail(widget.newsId, forceRefresh: true),
+            child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
                 if (imageUrl.isNotEmpty)
                   CachedNetworkImage(
                     imageUrl: imageUrl,
@@ -150,6 +153,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
                   ),
                 ),
               ],
+            ),
             ),
           );
         },

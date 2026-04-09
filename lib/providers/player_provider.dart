@@ -19,13 +19,13 @@ class PlayerProvider with ChangeNotifier {
   Map<String, dynamic>? get playerBowling => _playerBowling;
   List<dynamic>? get playerCareer => _playerCareer;
 
-  Future<void> searchPlayers(String name) async {
+  Future<void> searchPlayers(String name, {bool forceRefresh = false}) async {
     if (_isLoading) return;
     _isLoading = true;
     notifyListeners();
 
     try {
-      final response = await PlayerApi.searchPlayer(name);
+      final response = await PlayerApi.searchPlayer(name, forceRefresh: forceRefresh);
       if (response != null && response['player'] != null) {
         _searchResults = (response['player'] as List)
             .map((e) => PlayerModel.fromJson(Map<String, dynamic>.from(e as Map)))
@@ -42,13 +42,13 @@ class PlayerProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchTrendingPlayers() async {
+  Future<void> fetchTrendingPlayers({bool forceRefresh = false}) async {
     if (_isLoading) return;
     _isLoading = true;
     notifyListeners();
 
     try {
-      final response = await PlayerApi.getTrendingPlayers();
+      final response = await PlayerApi.getTrendingPlayers(forceRefresh: forceRefresh);
       if (response != null && response['player'] != null) {
         _trendingPlayers = (response['player'] as List)
             .map((e) => PlayerModel.fromJson(Map<String, dynamic>.from(e as Map)))
@@ -63,7 +63,7 @@ class PlayerProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchPlayerDetails(String id) async {
+  Future<void> fetchPlayerDetails(String id, {bool forceRefresh = false}) async {
     _currentPlayer = null;
     _playerBatting = null;
     _playerBowling = null;
@@ -72,7 +72,7 @@ class PlayerProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final response = await PlayerApi.getPlayerInfo(id);
+      final response = await PlayerApi.getPlayerInfo(id, forceRefresh: forceRefresh);
       if (response is Map) {
         _currentPlayer =
             PlayerModel.fromJson(Map<String, dynamic>.from(response));
@@ -87,7 +87,7 @@ class PlayerProvider with ChangeNotifier {
     if (_currentPlayer == null) return;
 
     try {
-      final bat = await PlayerApi.getPlayerBatting(id);
+      final bat = await PlayerApi.getPlayerBatting(id, forceRefresh: forceRefresh);
       if (bat is Map) {
         _playerBatting = Map<String, dynamic>.from(bat as Map);
       }
@@ -100,7 +100,7 @@ class PlayerProvider with ChangeNotifier {
     await Future.delayed(const Duration(milliseconds: 300));
 
     try {
-      final bowl = await PlayerApi.getPlayerBowling(id);
+      final bowl = await PlayerApi.getPlayerBowling(id, forceRefresh: forceRefresh);
       if (bowl is Map) {
         _playerBowling = Map<String, dynamic>.from(bowl as Map);
       }
@@ -113,7 +113,7 @@ class PlayerProvider with ChangeNotifier {
     await Future.delayed(const Duration(milliseconds: 300));
 
     try {
-      final career = await PlayerApi.getPlayerCareer(id);
+      final career = await PlayerApi.getPlayerCareer(id, forceRefresh: forceRefresh);
       if (career is Map && career['values'] is List) {
         _playerCareer = List<dynamic>.from(career['values'] as List);
       } else {
@@ -126,9 +126,9 @@ class PlayerProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<List<Map<String, dynamic>>> fetchPlayerNews(String id) async {
+  Future<List<Map<String, dynamic>>> fetchPlayerNews(String id, {bool forceRefresh = false}) async {
     try {
-      final response = await PlayerApi.getPlayerNews(id);
+      final response = await PlayerApi.getPlayerNews(id, forceRefresh: forceRefresh);
       if (response is! Map || response['storyList'] is! List) return [];
       final out = <Map<String, dynamic>>[];
       for (final item in response['storyList'] as List) {

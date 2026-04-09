@@ -68,7 +68,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
     }
 
     return RefreshIndicator(
-      onRefresh: () => provider.fetchMatchSchedules('international'),
+      onRefresh: () => provider.fetchMatchSchedules('international', forceRefresh: true),
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: schedules.length,
@@ -112,7 +112,7 @@ class _ScheduleScreenState extends State<ScheduleScreen> {
       return _buildEmptyState(emptyMsg);
     }
     return RefreshIndicator(
-      onRefresh: () => context.read<MatchProvider>().fetchMatches(),
+      onRefresh: () => context.read<MatchProvider>().fetchMatches(forceRefresh: true),
       child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: matches.length,

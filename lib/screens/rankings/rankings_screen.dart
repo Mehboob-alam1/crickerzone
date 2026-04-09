@@ -33,6 +33,10 @@ class _RankingsScreenState extends State<RankingsScreen> {
     }
   }
 
+  Future<void> _refreshRankings() {
+    return context.read<RankingProvider>().fetchAllRankings(_currentFormat, forceRefresh: true);
+  }
+
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
@@ -70,14 +74,25 @@ class _RankingsScreenState extends State<RankingsScreen> {
         body: Consumer<RankingProvider>(
           builder: (context, provider, child) {
             if (provider.isLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return RefreshIndicator(
+                onRefresh: _refreshRankings,
+                child: ListView(
+                  physics: const AlwaysScrollableScrollPhysics(),
+                  children: const [
+                    SizedBox(
+                      height: 400,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
+                  ],
+                ),
+              );
             }
             return TabBarView(
               children: [
-                _buildRankList(provider.teamRankings),
-                _buildRankList(provider.batterRankings),
-                _buildRankList(provider.bowlerRankings),
-                _buildWtcStandings(provider.iccStandings),
+                _buildRankList(provider.teamRankings, _refreshRankings),
+                _buildRankList(provider.batterRankings, _refreshRankings),
+                _buildRankList(provider.bowlerRankings, _refreshRankings),
+                _buildWtcStandings(provider.iccStandings, _refreshRankings),
               ],
             );
           },
@@ -86,11 +101,26 @@ class _RankingsScreenState extends State<RankingsScreen> {
     );
   }
 
-  Widget _buildRankList(List<RankingModel> items) {
+  Widget _buildRankList(List<RankingModel> items, Future<void> Function() onRefresh) {
     if (items.isEmpty) {
-      return const Center(child: Text('No data available', style: TextStyle(color: AppColors.textMuted)));
+      return RefreshIndicator(
+        onRefresh: onRefresh,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: const [
+            SizedBox(
+              height: 320,
+              child: Center(
+                child: Text('No data available', style: TextStyle(color: AppColors.textMuted)),
+              ),
+            ),
+          ],
+        ),
+      );
     }
-    return ListView.builder(
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: ListView.builder(
       padding: const EdgeInsets.all(16),
       itemCount: items.length,
       itemBuilder: (context, index) {
@@ -167,15 +197,27 @@ class _RankingsScreenState extends State<RankingsScreen> {
           ),
         );
       },
+      ),
     );
   }
 
-  Widget _buildWtcStandings(Map<String, dynamic>? data) {
+  Widget _buildWtcStandings(Map<String, dynamic>? data, Future<void> Function() onRefresh) {
     if (data == null) {
-      return const Center(
-        child: Text(
-          'Classifica WTC non disponibile',
-          style: TextStyle(color: AppColors.textMuted),
+      return RefreshIndicator(
+        onRefresh: onRefresh,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: const [
+            SizedBox(
+              height: 280,
+              child: Center(
+                child: Text(
+                  'Classifica WTC non disponibile',
+                  style: TextStyle(color: AppColors.textMuted),
+                ),
+              ),
+            ),
+          ],
         ),
       );
     }
@@ -186,15 +228,28 @@ class _RankingsScreenState extends State<RankingsScreen> {
     final subText = data['subText']?.toString() ?? '';
 
     if (headers.isEmpty || rows.isEmpty) {
-      return const Center(
-        child: Text(
-          'Nessun dato WTC',
-          style: TextStyle(color: AppColors.textMuted),
+      return RefreshIndicator(
+        onRefresh: onRefresh,
+        child: ListView(
+          physics: const AlwaysScrollableScrollPhysics(),
+          children: const [
+            SizedBox(
+              height: 280,
+              child: Center(
+                child: Text(
+                  'Nessun dato WTC',
+                  style: TextStyle(color: AppColors.textMuted),
+                ),
+              ),
+            ),
+          ],
         ),
       );
     }
 
-    return ListView(
+    return RefreshIndicator(
+      onRefresh: onRefresh,
+      child: ListView(
       padding: const EdgeInsets.all(16),
       children: [
         SingleChildScrollView(
@@ -276,6 +331,7 @@ class _RankingsScreenState extends State<RankingsScreen> {
           ),
         ],
       ],
+    ),
     );
   }
 }

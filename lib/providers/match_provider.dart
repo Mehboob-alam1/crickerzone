@@ -24,13 +24,13 @@ class MatchProvider with ChangeNotifier {
   List<MatchModel> get upcomingMatches => _matches.where((m) => m.matchType == 'Upcoming').toList();
   List<MatchModel> get recentMatches => _matches.where((m) => m.matchType == 'Recent').toList();
 
-  Future<void> fetchMatchSchedules(String type) async {
+  Future<void> fetchMatchSchedules(String type, {bool forceRefresh = false}) async {
     if (_isLoading) return;
     _isLoading = true;
     notifyListeners();
 
     try {
-      final data = await MatchApi.getMatchSchedule(type);
+      final data = await MatchApi.getMatchSchedule(type, forceRefresh: forceRefresh);
       if (data != null && data['matchScheduleMap'] != null) {
         final List map = data['matchScheduleMap'];
         _matchSchedules = map
@@ -46,15 +46,15 @@ class MatchProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchMatches() async {
+  Future<void> fetchMatches({bool forceRefresh = false}) async {
     if (_isLoading) return;
     _isLoading = true;
     notifyListeners();
 
     try {
-      final liveData = await MatchApi.getLiveMatches();
-      final upcomingData = await MatchApi.getUpcomingMatches();
-      final recentData = await MatchApi.getRecentMatches();
+      final liveData = await MatchApi.getLiveMatches(forceRefresh: forceRefresh);
+      final upcomingData = await MatchApi.getUpcomingMatches(forceRefresh: forceRefresh);
+      final recentData = await MatchApi.getRecentMatches(forceRefresh: forceRefresh);
 
       List<MatchModel> allMatches = [];
       allMatches.addAll(_parseMatches(liveData, 'Live'));
@@ -99,22 +99,22 @@ class MatchProvider with ChangeNotifier {
     return list;
   }
 
-  Future<void> fetchMatchDetails(String matchId) async {
+  Future<void> fetchMatchDetails(String matchId, {bool forceRefresh = false}) async {
     if (_isLoading) return;
     _isLoading = true;
     notifyListeners();
     try {
       // Fetching with small delays to avoid 429 Rate Limit
-      _matchScorecard = await MatchApi.getScorecard(matchId);
+      _matchScorecard = await MatchApi.getScorecard(matchId, forceRefresh: forceRefresh);
       await Future.delayed(const Duration(milliseconds: 300));
       
-      _matchCommentary = await MatchApi.getCommentary(matchId);
+      _matchCommentary = await MatchApi.getCommentary(matchId, forceRefresh: forceRefresh);
       await Future.delayed(const Duration(milliseconds: 300));
       
-      _matchInfo = await MatchApi.getMatchInfo(matchId);
+      _matchInfo = await MatchApi.getMatchInfo(matchId, forceRefresh: forceRefresh);
       await Future.delayed(const Duration(milliseconds: 300));
 
-      _matchOvers = await MatchApi.getOvers(matchId);
+      _matchOvers = await MatchApi.getOvers(matchId, forceRefresh: forceRefresh);
     } catch (e) {
       debugPrint('Error fetching match details: $e');
     } finally {

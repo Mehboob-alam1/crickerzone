@@ -15,24 +15,33 @@ class RankingProvider with ChangeNotifier {
   Map<String, dynamic>? get iccStandings => _iccStandings;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchAllRankings(String format) async {
+  Future<void> fetchAllRankings(String format, {bool forceRefresh = false}) async {
     if (_isLoading) return;
     _isLoading = true;
     notifyListeners();
 
     try {
-      _parseRankList(await RankingApi.getTeamRankings(format), (list) {
+      _parseRankList(
+        await RankingApi.getTeamRankings(format, forceRefresh: forceRefresh),
+        (list) {
         _teamRankings = list;
-      });
-      _parseRankList(await RankingApi.getPlayerRankings('batsmen', format), (list) {
+      },
+      );
+      _parseRankList(
+        await RankingApi.getPlayerRankings('batsmen', format, forceRefresh: forceRefresh),
+        (list) {
         _batterRankings = list;
-      });
-      _parseRankList(await RankingApi.getPlayerRankings('bowlers', format), (list) {
+      },
+      );
+      _parseRankList(
+        await RankingApi.getPlayerRankings('bowlers', format, forceRefresh: forceRefresh),
+        (list) {
         _bowlerRankings = list;
-      });
+      },
+      );
 
       try {
-        final stand = await RankingApi.getIccStandings();
+        final stand = await RankingApi.getIccStandings(forceRefresh: forceRefresh);
         if (stand is Map) {
           _iccStandings = Map<String, dynamic>.from(stand);
         } else {

@@ -1,24 +1,35 @@
 import '../services/api_service.dart';
 
 class TeamApi {
-
-  static Future getTeams() async {
-    final res = await ApiService.dio.get("/teams/v1/international");
-    return res.data;
+  static Future getTeams({bool forceRefresh = false}) async {
+    return ApiService.getCached(
+      '/teams/v1/international',
+      ttl: CacheTtls.teamsList,
+      forceRefresh: forceRefresh,
+    );
   }
 
-  static Future getTeamPlayers(String teamId) async {
-    final res = await ApiService.dio.get("/teams/v1/$teamId/players");
-    return res.data;
+  static Future getTeamPlayers(String teamId, {bool forceRefresh = false}) async {
+    return ApiService.getCached(
+      '/teams/v1/$teamId/players',
+      ttl: CacheTtls.teamDetail,
+      forceRefresh: forceRefresh,
+    );
   }
 
-  static Future getTeamMatches(String teamId) async {
-    final res = await ApiService.dio.get("/teams/v1/$teamId/schedule");
-    return res.data;
+  static Future getTeamMatches(String teamId, {bool forceRefresh = false}) async {
+    return ApiService.getCached(
+      '/teams/v1/$teamId/schedule',
+      ttl: CacheTtls.teamDetail,
+      forceRefresh: forceRefresh,
+    );
   }
 
-  static Future getTeamResults(String teamId) async {
-    final res = await ApiService.dio.get("/teams/v1/$teamId/results");
-    return res.data;
+  static Future getTeamResults(String teamId, {bool forceRefresh = false}) async {
+    return ApiService.getCached(
+      '/teams/v1/$teamId/results',
+      ttl: CacheTtls.teamDetail,
+      forceRefresh: forceRefresh,
+    );
   }
 }

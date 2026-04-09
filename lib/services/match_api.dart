@@ -1,72 +1,91 @@
 import '../services/api_service.dart';
 
 class MatchApi {
-
-  /// Recent Matches
-  static Future getRecentMatches() async {
-    final response = await ApiService.dio.get("/matches/v1/recent");
-    return response.data;
+  static Future getRecentMatches({bool forceRefresh = false}) async {
+    return ApiService.getCached(
+      '/matches/v1/recent',
+      ttl: CacheTtls.liveData,
+      forceRefresh: forceRefresh,
+    );
   }
 
-  /// Live Matches
-  static Future getLiveMatches() async {
-    final response = await ApiService.dio.get("/matches/v1/live");
-    return response.data;
+  static Future getLiveMatches({bool forceRefresh = false}) async {
+    return ApiService.getCached(
+      '/matches/v1/live',
+      ttl: CacheTtls.liveData,
+      forceRefresh: forceRefresh,
+    );
   }
 
-  /// Upcoming Matches
-  static Future getUpcomingMatches() async {
-    final response = await ApiService.dio.get("/matches/v1/upcoming");
-    return response.data;
+  static Future getUpcomingMatches({bool forceRefresh = false}) async {
+    return ApiService.getCached(
+      '/matches/v1/upcoming',
+      ttl: CacheTtls.liveData,
+      forceRefresh: forceRefresh,
+    );
   }
 
-  /// Match Info
-  static Future getMatchInfo(String matchId) async {
-    final response = await ApiService.dio.get("/mcenter/v1/$matchId");
-    return response.data;
+  static Future getMatchInfo(String matchId, {bool forceRefresh = false}) async {
+    return ApiService.getCached(
+      '/mcenter/v1/$matchId',
+      ttl: CacheTtls.matchCenter,
+      forceRefresh: forceRefresh,
+    );
   }
 
-  /// Scorecard
-  static Future getScorecard(String matchId) async {
-    final response = await ApiService.dio.get("/mcenter/v1/$matchId/scard");
-    return response.data;
+  static Future getScorecard(String matchId, {bool forceRefresh = false}) async {
+    return ApiService.getCached(
+      '/mcenter/v1/$matchId/scard',
+      ttl: CacheTtls.matchCenter,
+      forceRefresh: forceRefresh,
+    );
   }
 
-  /// Commentary
-  static Future getCommentary(String matchId) async {
-    final response = await ApiService.dio.get("/mcenter/v1/$matchId/comm");
-    return response.data;
+  static Future getCommentary(String matchId, {bool forceRefresh = false}) async {
+    return ApiService.getCached(
+      '/mcenter/v1/$matchId/comm',
+      ttl: CacheTtls.matchCenter,
+      forceRefresh: forceRefresh,
+    );
   }
 
-  /// Commentary V2
-  static Future getCommentaryV2(String matchId) async {
-    final response = await ApiService.dio.get("/mcenter/v1/$matchId/hcomm");
-    return response.data;
+  static Future getCommentaryV2(String matchId, {bool forceRefresh = false}) async {
+    return ApiService.getCached(
+      '/mcenter/v1/$matchId/hcomm',
+      ttl: CacheTtls.matchCenter,
+      forceRefresh: forceRefresh,
+    );
   }
 
-  /// Overs
-  static Future getOvers(String matchId) async {
-    final response = await ApiService.dio.get("/mcenter/v1/$matchId/overs");
-    return response.data;
+  static Future getOvers(String matchId, {bool forceRefresh = false}) async {
+    return ApiService.getCached(
+      '/mcenter/v1/$matchId/overs',
+      ttl: CacheTtls.matchCenter,
+      forceRefresh: forceRefresh,
+    );
   }
 
-  /// Team Info in Match
-  static Future getTeam(String matchId, String teamId) async {
-    final response =
-    await ApiService.dio.get("/mcenter/v1/$matchId/team/$teamId");
-    return response.data;
+  static Future getTeam(String matchId, String teamId, {bool forceRefresh = false}) async {
+    return ApiService.getCached(
+      '/mcenter/v1/$matchId/team/$teamId',
+      ttl: CacheTtls.matchCenter,
+      forceRefresh: forceRefresh,
+    );
   }
 
-  /// Highlights Scorecard
-  static Future getHighlightsScorecard(String matchId) async {
-    final response = await ApiService.dio.get("/mcenter/v1/$matchId/hscard");
-    return response.data;
+  static Future getHighlightsScorecard(String matchId, {bool forceRefresh = false}) async {
+    return ApiService.getCached(
+      '/mcenter/v1/$matchId/hscard',
+      ttl: CacheTtls.matchCenter,
+      forceRefresh: forceRefresh,
+    );
   }
 
-  /// Match Schedule
-  static Future getMatchSchedule(String type) async {
-    // type can be 'international', 'domestic', 't20', 'women'
-    final response = await ApiService.dio.get("/schedule/v1/$type");
-    return response.data;
+  static Future getMatchSchedule(String type, {bool forceRefresh = false}) async {
+    return ApiService.getCached(
+      '/schedule/v1/$type',
+      ttl: CacheTtls.schedule,
+      forceRefresh: forceRefresh,
+    );
   }
 }

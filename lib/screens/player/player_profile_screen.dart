@@ -40,26 +40,52 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
         builder: (context, provider, child) {
           final player = provider.currentPlayer;
 
-          if (provider.isLoading && player == null) {
-            return const Center(
-              child: CircularProgressIndicator(color: AppColors.primary),
-            );
-          }
+          Future<void> onPlayerRefresh() => context
+              .read<PlayerProvider>()
+              .fetchPlayerDetails(widget.playerId, forceRefresh: true);
 
-          if (player == null) {
-            return Scaffold(
-              appBar: AppBar(title: const Text('Player')),
-              body: const Center(
-                child: Text(
-                  'Profilo non disponibile',
-                  style: TextStyle(color: AppColors.textMuted),
-                ),
+          if (provider.isLoading && player == null) {
+            return RefreshIndicator(
+              onRefresh: onPlayerRefresh,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(
+                    height: 400,
+                    child: Center(
+                      child: CircularProgressIndicator(color: AppColors.primary),
+                    ),
+                  ),
+                ],
               ),
             );
           }
 
-          return CustomScrollView(
-            slivers: [
+          if (player == null) {
+            return RefreshIndicator(
+              onRefresh: onPlayerRefresh,
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: const [
+                  SizedBox(
+                    height: 280,
+                    child: Center(
+                      child: Text(
+                        'Profilo non disponibile',
+                        style: TextStyle(color: AppColors.textMuted),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }
+
+          return RefreshIndicator(
+            onRefresh: onPlayerRefresh,
+            child: CustomScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
+              slivers: [
               _buildAppBar(player),
               SliverToBoxAdapter(
                 child: Padding(
@@ -88,6 +114,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                 ),
               ),
             ],
+            ),
           );
         },
       ),

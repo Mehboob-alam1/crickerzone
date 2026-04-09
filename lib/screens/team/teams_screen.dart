@@ -44,10 +44,21 @@ class _TeamsScreenState extends State<TeamsScreen> {
           }
 
           if (!provider.isLoading && provider.teams.isEmpty) {
-            return Center(
-              child: Text(
-                'Nessuna squadra disponibile',
-                style: TextStyle(color: AppColors.textMuted),
+            return RefreshIndicator(
+              onRefresh: () => context.read<TeamProvider>().fetchTeams(forceRefresh: true),
+              child: ListView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                children: [
+                  SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.35,
+                    child: Center(
+                      child: Text(
+                        'Nessuna squadra disponibile',
+                        style: TextStyle(color: AppColors.textMuted),
+                      ),
+                    ),
+                  ),
+                ],
               ),
             );
           }
@@ -75,7 +86,10 @@ class _TeamsScreenState extends State<TeamsScreen> {
                 ),
               ),
               Expanded(
-                child: _TeamListWithSections(teams: provider.teams),
+                child: RefreshIndicator(
+                  onRefresh: () => context.read<TeamProvider>().fetchTeams(forceRefresh: true),
+                  child: _TeamListWithSections(teams: provider.teams),
+                ),
               ),
             ],
           );

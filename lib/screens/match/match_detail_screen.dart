@@ -98,6 +98,13 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
             ],
           ),
         ),
+        actions: [
+          IconButton(
+            tooltip: 'Refresh',
+            icon: const Icon(Icons.refresh_rounded, color: AppColors.primary),
+            onPressed: () => context.read<MatchProvider>().fetchMatchDetails(widget.matchId, forceRefresh: true),
+          ),
+        ],
       ),
       body: Column(
         children: [

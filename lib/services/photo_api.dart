@@ -1,24 +1,35 @@
 import 'dart:developer';
+
 import 'api_service.dart';
 
 class PhotoApi {
-  static Future<List<dynamic>> getPhotos() async {
+  static Future<List<dynamic>> getPhotos({bool forceRefresh = false}) async {
     try {
-      final response = await ApiService.dio.get('/photos/v1/index');
-      return response.data['photoGalleryInfoList'] ?? [];
+      final data = await ApiService.getCached(
+        '/photos/v1/index',
+        ttl: CacheTtls.photos,
+        forceRefresh: forceRefresh,
+      );
+      if (data is Map && data['photoGalleryInfoList'] is List) {
+        return List<dynamic>.from(data['photoGalleryInfoList'] as List);
+      }
+      return [];
     } catch (e) {
       log('Error Photos List: $e');
       return [];
     }
   }
 
-  /// Dettaglio galleria (`photos/get-gallery` → `photoGalleryDetails`).
-  static Future<Map<String, dynamic>?> getGallery(String galleryId) async {
+  static Future<Map<String, dynamic>?> getGallery(String galleryId, {bool forceRefresh = false}) async {
     for (final path in ['/photos/v1/gallery/$galleryId', '/photos/v1/detail/$galleryId']) {
       try {
-        final response = await ApiService.dio.get(path);
-        if (response.data is Map) {
-          return Map<String, dynamic>.from(response.data as Map);
+        final data = await ApiService.getCached(
+          path,
+          ttl: CacheTtls.photoGallery,
+          forceRefresh: forceRefresh,
+        );
+        if (data is Map) {
+          return Map<String, dynamic>.from(data);
         }
       } catch (e) {
         log('Gallery $path: $e');

@@ -96,7 +96,7 @@ class _HomeScreenState extends State<HomeScreen> {
           }
 
           return RefreshIndicator(
-            onRefresh: () => provider.fetchMatches(),
+            onRefresh: () => provider.fetchMatches(forceRefresh: true),
             color: AppColors.primary,
             backgroundColor: AppColors.surface,
             child: CustomScrollView(

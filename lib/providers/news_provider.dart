@@ -30,14 +30,14 @@ class NewsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchNews() async {
+  Future<void> fetchNews({bool forceRefresh = false}) async {
     if (_isLoading) return;
     _isLoading = true;
     _activeCategoryId = null;
     notifyListeners();
 
     try {
-      final response = await NewsApi.getNews();
+      final response = await NewsApi.getNews(forceRefresh: forceRefresh);
       _applyStoryList(response);
     } catch (e) {
       debugPrint('News: $e');
@@ -48,9 +48,9 @@ class NewsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchCategories() async {
+  Future<void> fetchCategories({bool forceRefresh = false}) async {
     try {
-      final res = await NewsApi.getCategories();
+      final res = await NewsApi.getCategories(forceRefresh: forceRefresh);
       if (res is Map && res['storyType'] is List) {
         _categories = (res['storyType'] as List)
             .whereType<Map>()
@@ -63,14 +63,17 @@ class NewsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchNewsByCategory(int categoryId) async {
+  Future<void> fetchNewsByCategory(int categoryId, {bool forceRefresh = false}) async {
     if (_isLoading) return;
     _isLoading = true;
     _activeCategoryId = categoryId;
     notifyListeners();
 
     try {
-      final response = await NewsApi.getNewsByCategory(categoryId.toString());
+      final response = await NewsApi.getNewsByCategory(
+        categoryId.toString(),
+        forceRefresh: forceRefresh,
+      );
       _applyStoryList(response);
     } catch (e) {
       debugPrint('News by category: $e');
@@ -81,14 +84,17 @@ class NewsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchNewsByTopic(int topicId) async {
+  Future<void> fetchNewsByTopic(int topicId, {bool forceRefresh = false}) async {
     if (_isLoading) return;
     _isLoading = true;
     _activeCategoryId = null;
     notifyListeners();
 
     try {
-      final response = await NewsApi.getNewsByTopic(topicId.toString());
+      final response = await NewsApi.getNewsByTopic(
+        topicId.toString(),
+        forceRefresh: forceRefresh,
+      );
       _applyStoryList(response);
     } catch (e) {
       debugPrint('News by topic: $e');
@@ -99,13 +105,13 @@ class NewsProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchNewsDetail(String id) async {
+  Future<void> fetchNewsDetail(String id, {bool forceRefresh = false}) async {
     _newsDetail = null;
     _detailLoading = true;
     notifyListeners();
 
     try {
-      final res = await NewsApi.getNewsDetail(id);
+      final res = await NewsApi.getNewsDetail(id, forceRefresh: forceRefresh);
       if (res is Map) {
         _newsDetail = Map<String, dynamic>.from(res);
       }

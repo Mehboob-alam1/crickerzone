@@ -9,13 +9,13 @@ class SeriesProvider with ChangeNotifier {
   List<SeriesModel> get seriesList => _seriesList;
   bool get isLoading => _isLoading;
 
-  Future<void> fetchInternationalSeries() async {
+  Future<void> fetchInternationalSeries({bool forceRefresh = false}) async {
     if (_isLoading) return;
     _isLoading = true;
     notifyListeners();
 
     try {
-      final response = await SeriesApi.getInternationalSeries();
+      final response = await SeriesApi.getInternationalSeries(forceRefresh: forceRefresh);
       if (response == null) return;
 
       final List<dynamic> groups =
