@@ -148,16 +148,80 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
     );
   }
 
+  /// Miniscore appears on commentary / overs payloads; scorecard may omit it.
+  Map<String, dynamic>? _miniscoreMap(MatchProvider provider) {
+    final comm = provider.matchCommentary?['miniscore'];
+    if (comm is Map<String, dynamic>) return comm;
+    if (comm is Map) return Map<String, dynamic>.from(comm);
+    final sc = provider.matchScorecard?['miniscore'];
+    if (sc is Map<String, dynamic>) return sc;
+    if (sc is Map) return Map<String, dynamic>.from(sc);
+    final ov = provider.matchOvers;
+    if (ov is Map<String, dynamic>) return ov;
+    if (ov is Map) return Map<String, dynamic>.from(ov!);
+    return null;
+  }
+
+  List<Map<String, dynamic>>? _bowlersFromMiniscore(Map<String, dynamic>? m) {
+    if (m == null) return null;
+    final list = <Map<String, dynamic>>[];
+    void add(Map<dynamic, dynamic>? b) {
+      if (b == null) return;
+      final name = b['bowlName'] ?? b['name'];
+      if (name == null || name.toString().isEmpty) return;
+      list.add({
+        'name': name.toString(),
+        'wickets': b['bowlWkts'] ?? b['wickets'] ?? 0,
+        'runs': b['bowlRuns'] ?? b['runs'] ?? 0,
+        'overs': b['bowlOvs'] ?? b['overs'] ?? 0,
+        'economy': b['bowlEcon'] ?? b['economy'] ?? 0,
+      });
+    }
+    add(m['bowlerStriker'] as Map?);
+    add(m['bowlerNonStriker'] as Map?);
+    return list.isEmpty ? null : list;
+  }
+
+  List<Map<String, dynamic>>? _battersFromMiniscore(Map<String, dynamic>? m) {
+    if (m == null) return null;
+    final list = <Map<String, dynamic>>[];
+    void add(Map<dynamic, dynamic>? b) {
+      if (b == null) return;
+      final name = b['batName'] ?? b['name'];
+      if (name == null || name.toString().isEmpty) return;
+      final id = b['batId'] ?? b['id'];
+      if (id == 0) return;
+      list.add({
+        'name': name.toString(),
+        'runs': b['batRuns'] ?? b['runs'] ?? 0,
+        'balls': b['batBalls'] ?? b['balls'] ?? 0,
+        'fours': b['batFours'] ?? b['fours'] ?? 0,
+        'sixes': b['batSixes'] ?? b['sixes'] ?? 0,
+        'strikeRate': b['batStrikeRate'] ?? b['strikeRate'] ?? 0,
+      });
+    }
+    add(m['batsmanStriker'] as Map?);
+    add(m['batsmanNonStriker'] as Map?);
+    return list.isEmpty ? null : list;
+  }
+
   Widget _buildLiveView(MatchModel match, MatchProvider provider) {
     if (provider.isLoading && provider.matchInfo == null) {
       return const Center(child: CircularProgressIndicator(color: AppColors.primary));
     }
 
-    final miniscore = provider.matchScorecard?['miniscore'];
-    final crr = miniscore?['crr']?.toString() ?? '0.00';
-    final rrr = miniscore?['rrr']?.toString() ?? '0.00';
+    final miniscore = _miniscoreMap(provider);
+    final crr = (miniscore?['currentRunRate'] ?? miniscore?['crr'])?.toString() ?? '0.00';
+    final rrr = (miniscore?['requiredRunRate'] ?? miniscore?['rrr'])?.toString() ?? '0.00';
     final target = miniscore?['target']?.toString() ?? '-';
     final status = miniscore?['status'] ?? match.status;
+    final bowlers = _bowlersFromMiniscore(miniscore);
+    final batters = _battersFromMiniscore(miniscore);
+    final rawPartnership = miniscore?['partnerShip'] ?? miniscore?['partnership'];
+    Map<String, dynamic>? partnershipMap;
+    if (rawPartnership is Map) {
+      partnershipMap = Map<String, dynamic>.from(rawPartnership as Map);
+    }
 
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
@@ -186,9 +250,18 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
           ),
           if (provider.matchOvers != null)
             FadeInUp(delay: const Duration(milliseconds: 300), child: _buildOversTimeline(provider.matchOvers!)),
-          
-          FadeInUp(delay: const Duration(milliseconds: 400), child: _buildBowlerSection(miniscore?['bowlerStrip'])),
-          FadeInUp(delay: const Duration(milliseconds: 500), child: _buildBatterSection(miniscore?['batsmanStrip'], miniscore?['partnership'])),
+
+          FadeInUp(
+            delay: const Duration(milliseconds: 400),
+            child: _buildBowlerSection(bowlers ?? (miniscore?['bowlerStrip'] as List?)),
+          ),
+          FadeInUp(
+            delay: const Duration(milliseconds: 500),
+            child: _buildBatterSection(
+              batters ?? (miniscore?['batsmanStrip'] as List?),
+              partnershipMap,
+            ),
+          ),
           
           FadeInUp(delay: const Duration(milliseconds: 600), child: _buildLargeScoreDisplay(match)),
           const SizedBox(height: 20),
@@ -225,8 +298,18 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
     final overSummary = oversData['overSummaryList'] as List?;
     if (overSummary == null || overSummary.isEmpty) return const SizedBox.shrink();
 
-    final lastOver = overSummary.first;
-    final balls = lastOver['balls'] as List? ?? [];
+    final lastOver = Map<String, dynamic>.from(overSummary.first as Map);
+    final rawBalls = lastOver['balls'] as List?;
+    final oSummary = lastOver['o_summary'] as String?;
+    final List<dynamic> balls;
+    if (rawBalls != null && rawBalls.isNotEmpty) {
+      balls = rawBalls;
+    } else if (oSummary != null && oSummary.trim().isNotEmpty) {
+      balls = oSummary.trim().split(RegExp(r'\s+')).where((s) => s.isNotEmpty).toList();
+    } else {
+      balls = [];
+    }
+    if (balls.isEmpty) return const SizedBox.shrink();
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -368,17 +451,99 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
       padding: const EdgeInsets.all(16),
       itemCount: innings.length,
       itemBuilder: (context, index) {
-        final inning = innings[index];
-        final teamName = inning['batTeamName'] ?? 'Team';
-        final score = "${inning['runs']}/${inning['wickets']} (${inning['overs']})";
-        
+        final inning = Map<String, dynamic>.from(innings[index] as Map);
+        final bat = inning['batTeamDetails'];
+        final batMap = bat is Map ? Map<String, dynamic>.from(bat as Map) : <String, dynamic>{};
+        final teamName = batMap['batTeamName'] ?? inning['batTeamName'] ?? 'Team';
+        final sd = inning['scoreDetails'];
+        final sdMap = sd is Map ? Map<String, dynamic>.from(sd as Map) : <String, dynamic>{};
+        final runs = sdMap['runs'] ?? inning['runs'] ?? 0;
+        final wkts = sdMap['wickets'] ?? inning['wickets'] ?? 0;
+        final overs = sdMap['overs'] ?? inning['overs'] ?? 0;
+        final score = '$runs/$wkts ($overs)';
+
+        final batsmenRaw = batMap['batsmenData'];
+        final batsmen = batsmenRaw is Map ? Map<String, dynamic>.from(batsmenRaw as Map) : <String, dynamic>{};
+        final batKeys = batsmen.keys.toList()
+          ..sort((a, b) {
+            final na = int.tryParse(a.replaceFirst(RegExp(r'bat_'), '')) ?? 0;
+            final nb = int.tryParse(b.replaceFirst(RegExp(r'bat_'), '')) ?? 0;
+            return na.compareTo(nb);
+          });
+
+        final bowlTeam = inning['bowlTeamDetails'];
+        final bowlMap = bowlTeam is Map ? Map<String, dynamic>.from(bowlTeam as Map) : <String, dynamic>{};
+        final bowlersRaw = bowlMap['bowlersData'];
+        final bowlersMap = bowlersRaw is Map ? Map<String, dynamic>.from(bowlersRaw as Map) : <String, dynamic>{};
+        final bowlKeys = bowlersMap.keys.toList()
+          ..sort((a, b) {
+            final na = int.tryParse(a.replaceFirst(RegExp(r'bowl_'), '')) ?? 0;
+            final nb = int.tryParse(b.replaceFirst(RegExp(r'bowl_'), '')) ?? 0;
+            return na.compareTo(nb);
+          });
+
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            FadeInLeft(child: _buildTeamScorecardHeader(teamName, score)),
+            FadeInLeft(child: _buildTeamScorecardHeader(teamName.toString(), score)),
             const SizedBox(height: 8),
-            // You can iterate over battingTable here if you want full details
-            const Text("Detailed scorecard available in full version", style: TextStyle(color: AppColors.textMuted, fontSize: 10)),
+            if (batKeys.isNotEmpty) ...[
+              const Text('Batting', style: TextStyle(color: AppColors.textMuted, fontSize: 11, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 6),
+              ...batKeys.map((k) {
+                final row = Map<String, dynamic>.from(batsmen[k] as Map);
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          row['batName']?.toString() ?? '',
+                          style: const TextStyle(color: AppColors.textPrimary, fontSize: 12),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          '${row['runs'] ?? 0} (${row['balls'] ?? 0})',
+                          textAlign: TextAlign.end,
+                          style: const TextStyle(color: AppColors.textPrimary, fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
+            if (bowlKeys.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              const Text('Bowling', style: TextStyle(color: AppColors.textMuted, fontSize: 11, fontWeight: FontWeight.bold)),
+              const SizedBox(height: 6),
+              ...bowlKeys.map((k) {
+                final row = Map<String, dynamic>.from(bowlersMap[k] as Map);
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: Text(
+                          row['bowlName']?.toString() ?? '',
+                          style: const TextStyle(color: AppColors.textPrimary, fontSize: 12),
+                        ),
+                      ),
+                      Expanded(
+                        child: Text(
+                          '${row['wickets'] ?? 0}-${row['runs'] ?? 0} (${row['overs'] ?? 0})',
+                          textAlign: TextAlign.end,
+                          style: const TextStyle(color: AppColors.textPrimary, fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+            ],
             const SizedBox(height: 24),
           ],
         );
@@ -403,10 +568,10 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
       padding: const EdgeInsets.all(16),
       itemCount: commentaryList.length,
       itemBuilder: (context, index) {
-        final item = commentaryList[index];
+        final item = Map<String, dynamic>.from(commentaryList[index] as Map);
         final over = item['overNumber']?.toString() ?? '';
-        final text = item['commText'] ?? '';
-        final isWicket = item['wicket'] == true;
+        final text = _formatCommentaryText(item);
+        final isWicket = item['event']?.toString() == 'WICKET' || item['wicket'] == true;
 
         return FadeInRight(
           delay: Duration(milliseconds: 50 * (index % 10)),
@@ -416,32 +581,91 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
     );
   }
 
+  List<Map<String, dynamic>> _playerRows(dynamic raw) {
+    if (raw is! List) return [];
+    return raw.map((e) => Map<String, dynamic>.from(e as Map)).toList();
+  }
+
+  Widget _buildSquadPlayerList(List<Map<String, dynamic>> players) {
+    if (players.isEmpty) {
+      return const Text('Nessun giocatore in elenco', style: TextStyle(color: AppColors.textMuted, fontSize: 12));
+    }
+    final playing = players.where((p) => p['substitute'] != true).toList();
+    final bench = players.where((p) => p['substitute'] == true).toList();
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (playing.isNotEmpty) ...[
+          const Text('In campo', style: TextStyle(color: AppColors.textMuted, fontSize: 11, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 6),
+          ...playing.map(_buildSquadPlayerRow),
+        ],
+        if (bench.isNotEmpty) ...[
+          const SizedBox(height: 12),
+          const Text('Panchina / riserve', style: TextStyle(color: AppColors.textMuted, fontSize: 11, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 6),
+          ...bench.map(_buildSquadPlayerRow),
+        ],
+      ],
+    );
+  }
+
+  Widget _buildSquadPlayerRow(Map<String, dynamic> pm) {
+    final sub = pm['substitute'] == true ? ' (ris.)' : '';
+    final name = pm['name'] ?? pm['fullName'] ?? '';
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (pm['captain'] == true)
+            const Padding(padding: EdgeInsets.only(right: 6), child: Text('©', style: TextStyle(color: AppColors.primary, fontSize: 12))),
+          if (pm['keeper'] == true)
+            const Padding(padding: EdgeInsets.only(right: 4), child: Text('†', style: TextStyle(color: AppColors.primary, fontSize: 12))),
+          Expanded(child: Text('$name$sub', style: const TextStyle(color: AppColors.textPrimary, fontSize: 12))),
+          if ((pm['role'] ?? '').toString().isNotEmpty)
+            SizedBox(
+              width: 100,
+              child: Text(pm['role'].toString(), textAlign: TextAlign.end, style: const TextStyle(color: AppColors.textMuted, fontSize: 10)),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildSquadsView(MatchProvider provider) {
-     if (provider.isLoading && provider.matchInfo == null) {
+    if (provider.isLoading && provider.matchInfo == null) {
       return const Center(child: CircularProgressIndicator());
     }
-    
+
     final info = provider.matchInfo;
-    if (info == null || info['team1'] == null) {
+    if (info == null) {
       return const Center(child: Text("Squad info not available", style: TextStyle(color: Colors.white)));
     }
 
-    final team1 = info['team1']['teamName'] ?? 'Team 1';
-    final team2 = info['team2']['teamName'] ?? 'Team 2';
-    // The squads usually come from a different endpoint or deeper in matchInfo
-    // For now, let's just show team names if squads aren't easily available
-    
+    final root = info['matchInfo'] != null ? Map<String, dynamic>.from(info['matchInfo'] as Map) : Map<String, dynamic>.from(info);
+    final t1 = root['team1'];
+    final t2 = root['team2'];
+    if (t1 == null || t2 == null) {
+      return const Center(child: Text("Squad info not available", style: TextStyle(color: Colors.white)));
+    }
+
+    final team1Map = Map<String, dynamic>.from(t1 as Map);
+    final team2Map = Map<String, dynamic>.from(t2 as Map);
+    final team1Name = team1Map['name'] ?? team1Map['teamName'] ?? 'Team 1';
+    final team2Name = team2Map['name'] ?? team2Map['teamName'] ?? 'Team 2';
+
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.all(16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          FadeInLeft(child: _buildSquadHeader(team1)),
-          const Text("Squad details will appear here", style: TextStyle(color: AppColors.textMuted)),
+          FadeInLeft(child: _buildSquadHeader(team1Name.toString())),
+          _buildSquadPlayerList(_playerRows(team1Map['playerDetails'])),
           const SizedBox(height: 24),
-          FadeInLeft(delay: const Duration(milliseconds: 200), child: _buildSquadHeader(team2)),
-          const Text("Squad details will appear here", style: TextStyle(color: AppColors.textMuted)),
+          FadeInLeft(delay: const Duration(milliseconds: 200), child: _buildSquadHeader(team2Name.toString())),
+          _buildSquadPlayerList(_playerRows(team2Map['playerDetails'])),
         ],
       ),
     );
@@ -467,6 +691,22 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
       decoration: const BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white10))),
       child: Text(team, style: const TextStyle(color: AppColors.primary, fontWeight: FontWeight.bold, fontSize: 16)),
     );
+  }
+
+  /// Sostituisce segnaposti tipo B0$, B1$ con i valori in [commentaryFormats.bold].
+  String _formatCommentaryText(Map<String, dynamic> item) {
+    var text = item['commText']?.toString() ?? '';
+    final fmt = item['commentaryFormats'];
+    if (fmt is! Map) return text;
+    final bold = fmt['bold'];
+    if (bold is! Map) return text;
+    final ids = bold['formatId'];
+    final values = bold['formatValue'];
+    if (ids is! List || values is! List || ids.length != values.length) return text;
+    for (var i = 0; i < ids.length; i++) {
+      text = text.replaceAll(ids[i].toString(), values[i].toString());
+    }
+    return text;
   }
 
   Widget _buildCommentaryItem(String over, String text, {bool isWicket = false}) {
@@ -560,9 +800,36 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
   }
 
   Widget _buildMatchInformation(Map<String, dynamic> info) {
-    final matchInfo = info['matchInfo'] ?? info;
-    final venueInfo = matchInfo['venueInfo'] ?? {};
-    
+    final matchInfoRaw = info['matchInfo'] ?? info;
+    final matchInfo = matchInfoRaw is Map ? Map<String, dynamic>.from(matchInfoRaw as Map) : <String, dynamic>{};
+    final rootVenue = info['venueInfo'];
+    final rootVenueMap = rootVenue is Map ? Map<String, dynamic>.from(rootVenue as Map) : <String, dynamic>{};
+    final miVenue = matchInfo['venue'];
+    final miVenueMap = miVenue is Map ? Map<String, dynamic>.from(miVenue as Map) : <String, dynamic>{};
+    final nestedVenue = matchInfo['venueInfo'];
+    final nestedVenueMap = nestedVenue is Map ? Map<String, dynamic>.from(nestedVenue as Map) : <String, dynamic>{};
+
+    final ground = rootVenueMap['ground'] ?? nestedVenueMap['ground'] ?? miVenueMap['name'] ?? '';
+    final city = rootVenueMap['city'] ?? nestedVenueMap['city'] ?? miVenueMap['city'] ?? '';
+    final venueLine = [ground, city].where((s) => s.toString().trim().isNotEmpty).join(', ');
+
+    final toss = matchInfo['tossResults'];
+    String tossLine = 'N/A';
+    if (toss is Map) {
+      final tw = toss['tossWinnerName'] ?? toss['tossWinner'];
+      final dec = toss['decision'];
+      if (tw != null && dec != null) {
+        tossLine = '$tw opt to $dec';
+      }
+    } else if (matchInfo['toss'] != null) {
+      tossLine = matchInfo['toss'].toString();
+    }
+
+    final seriesObj = matchInfo['series'];
+    final seriesName = seriesObj is Map
+        ? (seriesObj['name'] ?? seriesObj['seriesName'])?.toString()
+        : matchInfo['seriesName']?.toString();
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -570,14 +837,19 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
         children: [
           const Text('Match Information', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 13, color: AppColors.textPrimary)),
           const SizedBox(height: 16),
-          _buildInfoRow('Toss', matchInfo['toss'] ?? 'N/A'),
-          _buildInfoRow('Series', matchInfo['seriesName'] ?? 'N/A'),
-          _buildInfoRow('Season', matchInfo['season'] ?? 'N/A'),
-          _buildInfoRow('Match Number', matchInfo['matchNum']?.toString() ?? 'N/A'),
-          _buildInfoRow('Venue', "${venueInfo['ground'] ?? ''}, ${venueInfo['city'] ?? ''}"),
-          _buildInfoRow('Match Days', matchInfo['matchStartTimestamp'] != null 
-              ? DateFormat('dd MMMM yyyy').format(DateTime.fromMillisecondsSinceEpoch(int.parse(matchInfo['matchStartTimestamp'].toString())))
-              : 'N/A'),
+          _buildInfoRow('Toss', tossLine),
+          _buildInfoRow('Series', seriesName ?? 'N/A'),
+          _buildInfoRow('Season', matchInfo['season']?.toString() ?? 'N/A'),
+          _buildInfoRow('Match Number', matchInfo['matchNum']?.toString() ?? matchInfo['matchDescription']?.toString() ?? 'N/A'),
+          _buildInfoRow('Venue', venueLine.isEmpty ? 'N/A' : venueLine),
+          _buildInfoRow(
+            'Match Days',
+            matchInfo['matchStartTimestamp'] != null
+                ? DateFormat('dd MMMM yyyy').format(
+                    DateTime.fromMillisecondsSinceEpoch(int.parse(matchInfo['matchStartTimestamp'].toString())),
+                  )
+                : 'N/A',
+          ),
           _buildInfoRow('Umpires', matchInfo['umpire1']?['name'] ?? 'N/A'),
           _buildInfoRow('TV Umpire', matchInfo['umpire3']?['name'] ?? 'N/A'),
           _buildInfoRow('Match Referee', matchInfo['referee']?['name'] ?? 'N/A'),

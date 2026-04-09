@@ -6,11 +6,13 @@ class RankingProvider with ChangeNotifier {
   List<RankingModel> _teamRankings = [];
   List<RankingModel> _batterRankings = [];
   List<RankingModel> _bowlerRankings = [];
+  Map<String, dynamic>? _iccStandings;
   bool _isLoading = false;
 
   List<RankingModel> get teamRankings => _teamRankings;
   List<RankingModel> get batterRankings => _batterRankings;
   List<RankingModel> get bowlerRankings => _bowlerRankings;
+  Map<String, dynamic>? get iccStandings => _iccStandings;
   bool get isLoading => _isLoading;
 
   Future<void> fetchAllRankings(String format) async {
@@ -19,34 +21,49 @@ class RankingProvider with ChangeNotifier {
     notifyListeners();
 
     try {
-      final teamRes = await RankingApi.getTeamRankings(format);
-      if (teamRes != null && teamRes['rank'] != null) {
-        _teamRankings = (teamRes['rank'] as List)
-            .map((e) => RankingModel.fromJson(e))
-            .toList();
-      }
+      _parseRankList(await RankingApi.getTeamRankings(format), (list) {
+        _teamRankings = list;
+      });
+      _parseRankList(await RankingApi.getPlayerRankings('batsmen', format), (list) {
+        _batterRankings = list;
+      });
+      _parseRankList(await RankingApi.getPlayerRankings('bowlers', format), (list) {
+        _bowlerRankings = list;
+      });
 
-      final batterRes = await RankingApi.getPlayerRankings('batsmen', format);
-      if (batterRes != null && batterRes['rank'] != null) {
-        _batterRankings = (batterRes['rank'] as List)
-            .map((e) => RankingModel.fromJson(e))
-            .toList();
-      }
-
-      final bowlerRes = await RankingApi.getPlayerRankings('bowlers', format);
-      if (bowlerRes != null && bowlerRes['rank'] != null) {
-        _bowlerRankings = (bowlerRes['rank'] as List)
-            .map((e) => RankingModel.fromJson(e))
-            .toList();
+      try {
+        final stand = await RankingApi.getIccStandings();
+        if (stand is Map) {
+          _iccStandings = Map<String, dynamic>.from(stand);
+        } else {
+          _iccStandings = null;
+        }
+      } catch (e) {
+        debugPrint('ICC standings: $e');
+        _iccStandings = null;
       }
     } catch (e) {
       debugPrint('Rankings restricted or error: $e');
       _teamRankings = [];
       _batterRankings = [];
       _bowlerRankings = [];
+      _iccStandings = null;
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  void _parseRankList(dynamic res, void Function(List<RankingModel>) assign) {
+    if (res is! Map || res['rank'] is! List) {
+      assign([]);
+      return;
+    }
+    assign(
+      (res['rank'] as List)
+          .whereType<Map>()
+          .map((e) => RankingModel.fromJson(Map<String, dynamic>.from(e)))
+          .toList(),
+    );
   }
 }

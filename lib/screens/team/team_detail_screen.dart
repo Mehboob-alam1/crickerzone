@@ -48,6 +48,7 @@ class _TeamDetailScreenState extends State<TeamDetailScreen> {
             logo: '',
             description: '',
             squad: [],
+            isSectionHeader: false,
           ),
         );
 
@@ -125,42 +126,67 @@ class _TeamDetailScreenState extends State<TeamDetailScreen> {
                       physics: const NeverScrollableScrollPhysics(),
                       itemCount: _squad.length,
                       itemBuilder: (context, index) {
-                        final player = _squad[index];
+                        final player = _squad[index] as Map<String, dynamic>;
+                        final name = player['name']?.toString() ?? '';
+                        final playerId = player['id']?.toString() ?? player['playerId']?.toString();
+                        final imageId = player['imageId'] ?? player['faceImageId'];
+                        final isHeader = playerId == null || playerId.isEmpty;
+
+                        if (isHeader) {
+                          return Padding(
+                            padding: const EdgeInsets.only(top: 16, bottom: 8),
+                            child: Text(
+                              name,
+                              style: const TextStyle(
+                                color: AppColors.primary,
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.5,
+                              ),
+                            ),
+                          );
+                        }
+
+                        final subtitle = player['role']?.toString() ??
+                            [
+                              if (player['battingStyle'] != null) player['battingStyle'].toString(),
+                              if (player['bowlingStyle'] != null) player['bowlingStyle'].toString(),
+                            ].where((s) => s.isNotEmpty).join(' · ');
+
                         return FadeInUp(
                           delay: Duration(milliseconds: 50 * index),
                           child: ListTile(
                             contentPadding: EdgeInsets.zero,
                             leading: CircleAvatar(
                               backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                              backgroundImage: player['faceImageId'] != null
-                                  ? CachedNetworkImageProvider('https://static.cricbuzz.com/a/img/v1/i1/c${player['faceImageId']}/i.jpg')
+                              backgroundImage: imageId != null
+                                  ? CachedNetworkImageProvider(
+                                      'https://static.cricbuzz.com/a/img/v1/i1/c$imageId/i.jpg',
+                                    )
                                   : null,
-                              child: player['faceImageId'] == null
+                              child: imageId == null
                                   ? Text(
-                                      player['name']?[0] ?? 'P',
+                                      name.isNotEmpty ? name[0] : 'P',
                                       style: const TextStyle(color: AppColors.primary),
                                     )
                                   : null,
                             ),
                             title: Text(
-                              player['name'] ?? 'Unknown Player',
+                              name.isNotEmpty ? name : 'Unknown Player',
                               style: const TextStyle(color: AppColors.textPrimary),
                             ),
-                            subtitle: Text(
-                              player['role'] ?? 'Role not available',
-                              style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
-                            ),
+                            subtitle: subtitle.isEmpty
+                                ? null
+                                : Text(
+                                    subtitle,
+                                    style: const TextStyle(color: AppColors.textMuted, fontSize: 12),
+                                  ),
                             trailing: const Icon(
                               Icons.arrow_forward_ios,
                               size: 14,
                               color: AppColors.textMuted,
                             ),
-                            onTap: () {
-                              final id = player['id']?.toString() ?? player['playerId']?.toString();
-                              if (id != null) {
-                                context.push('/player/$id');
-                              }
-                            },
+                            onTap: () => context.push('/player/$playerId'),
                           ),
                         );
                       },

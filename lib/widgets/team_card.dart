@@ -9,6 +9,12 @@ class TeamCard extends StatelessWidget {
   final int index;
   final VoidCallback? onTap;
 
+  static String _avatarLetter(String name) {
+    final t = name.trim();
+    if (t.isEmpty) return '?';
+    return t[0].toUpperCase();
+  }
+
   const TeamCard({
     super.key,
     required this.team,
@@ -18,8 +24,9 @@ class TeamCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final animIndex = index.clamp(0, 50);
     return FadeInUp(
-      delay: Duration(milliseconds: 100 * index),
+      delay: Duration(milliseconds: 100 * animIndex),
       duration: const Duration(milliseconds: 500),
       child: InkWell(
         onTap: onTap,
@@ -47,7 +54,19 @@ class TeamCard extends StatelessWidget {
                   child: CircleAvatar(
                     radius: 35,
                     backgroundColor: AppColors.textPrimary.withValues(alpha: 0.05),
-                    backgroundImage: CachedNetworkImageProvider(team.logo),
+                    backgroundImage: team.logo.isNotEmpty
+                        ? CachedNetworkImageProvider(team.logo)
+                        : null,
+                    child: team.logo.isEmpty
+                        ? Text(
+                            _avatarLetter(team.name),
+                            style: const TextStyle(
+                              color: AppColors.primary,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 24,
+                            ),
+                          )
+                        : null,
                   ),
                 ),
               ),
@@ -68,7 +87,7 @@ class TeamCard extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               ZoomIn(
-                delay: Duration(milliseconds: 200 + (100 * index)),
+                delay: Duration(milliseconds: 200 + (100 * animIndex)),
                 child: Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                   decoration: BoxDecoration(

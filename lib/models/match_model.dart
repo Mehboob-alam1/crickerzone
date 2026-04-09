@@ -38,12 +38,17 @@ class MatchModel {
     String getScore(Map<String, dynamic> teamScore) {
       final inngs1 = teamScore['inngs1'];
       final inngs2 = teamScore['inngs2'];
-      
+
       if (inngs1 == null) return '-';
-      
-      String res = '${inngs1['runs']}/${inngs1['wickets']}';
+
+      String innStr(Map<String, dynamic> inn) {
+        final w = inn['wickets'];
+        return '${inn['runs']}/${w ?? 0}';
+      }
+
+      String res = innStr(Map<String, dynamic>.from(inngs1 as Map));
       if (inngs2 != null) {
-        res += ' & ${inngs2['runs']}/${inngs2['wickets']}';
+        res += ' & ${innStr(Map<String, dynamic>.from(inngs2 as Map))}';
       }
       return res;
     }

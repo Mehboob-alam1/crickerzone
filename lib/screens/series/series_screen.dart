@@ -66,13 +66,15 @@ class _SeriesScreenState extends State<SeriesScreen> {
                           color: AppColors.textPrimary,
                         ),
                       ),
-                      subtitle: Padding(
-                        padding: const EdgeInsets.only(top: 8.0),
-                        child: Text(
-                          "Type: ${series.seriesType}",
-                          style: const TextStyle(color: AppColors.textMuted),
-                        ),
-                      ),
+                      subtitle: series.seriesType.isEmpty
+                          ? null
+                          : Padding(
+                              padding: const EdgeInsets.only(top: 8.0),
+                              child: Text(
+                                'Type: ${series.seriesType}',
+                                style: const TextStyle(color: AppColors.textMuted),
+                              ),
+                            ),
                       trailing: const Icon(
                         Icons.chevron_right,
                         color: AppColors.primary,

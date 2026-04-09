@@ -18,7 +18,8 @@ class TeamProvider with ChangeNotifier {
       final response = await TeamApi.getTeams();
       if (response != null && response['list'] != null) {
         _teams = (response['list'] as List)
-            .map((team) => TeamModel.fromJson(team))
+            .map((e) => Map<String, dynamic>.from(e as Map))
+            .map(TeamModel.fromJson)
             .toList();
       }
     } catch (e) {
@@ -34,9 +35,20 @@ class TeamProvider with ChangeNotifier {
     try {
       final response = await TeamApi.getTeamMatches(teamId);
       if (response == null) return [];
-      return response['schedule'] ?? [];
+      return (response['teamMatchesData'] ?? response['schedule'] ?? []) as List;
     } catch (e) {
       debugPrint('Error fetching team matches: $e');
+      return [];
+    }
+  }
+
+  Future<List<dynamic>> fetchTeamResults(String teamId) async {
+    try {
+      final response = await TeamApi.getTeamResults(teamId);
+      if (response == null) return [];
+      return (response['teamMatchesData'] ?? response['results'] ?? []) as List;
+    } catch (e) {
+      debugPrint('Error fetching team results: $e');
       return [];
     }
   }
@@ -51,5 +63,6 @@ class TeamProvider with ChangeNotifier {
       return [];
     }
   }
+
 }
 

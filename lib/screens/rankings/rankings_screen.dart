@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:animate_do/animate_do.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/constants/colors.dart';
 import '../../providers/ranking_provider.dart';
 import '../../models/ranking_model.dart';
@@ -35,7 +36,7 @@ class _RankingsScreenState extends State<RankingsScreen> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('ICC RANKINGS'),
@@ -54,6 +55,7 @@ class _RankingsScreenState extends State<RankingsScreen> {
             const SizedBox(width: 16),
           ],
           bottom: const TabBar(
+            isScrollable: true,
             indicatorColor: AppColors.primary,
             labelColor: AppColors.primary,
             unselectedLabelColor: AppColors.textMuted,
@@ -61,6 +63,7 @@ class _RankingsScreenState extends State<RankingsScreen> {
               Tab(text: 'TEAMS'),
               Tab(text: 'BATTERS'),
               Tab(text: 'BOWLERS'),
+              Tab(text: 'WTC'),
             ],
           ),
         ),
@@ -74,6 +77,7 @@ class _RankingsScreenState extends State<RankingsScreen> {
                 _buildRankList(provider.teamRankings),
                 _buildRankList(provider.batterRankings),
                 _buildRankList(provider.bowlerRankings),
+                _buildWtcStandings(provider.iccStandings),
               ],
             );
           },
@@ -163,6 +167,115 @@ class _RankingsScreenState extends State<RankingsScreen> {
           ),
         );
       },
+    );
+  }
+
+  Widget _buildWtcStandings(Map<String, dynamic>? data) {
+    if (data == null) {
+      return const Center(
+        child: Text(
+          'Classifica WTC non disponibile',
+          style: TextStyle(color: AppColors.textMuted),
+        ),
+      );
+    }
+
+    final headers =
+        (data['headers'] as List?)?.map((e) => e.toString()).toList() ?? [];
+    final rows = (data['values'] as List?) ?? [];
+    final subText = data['subText']?.toString() ?? '';
+
+    if (headers.isEmpty || rows.isEmpty) {
+      return const Center(
+        child: Text(
+          'Nessun dato WTC',
+          style: TextStyle(color: AppColors.textMuted),
+        ),
+      );
+    }
+
+    return ListView(
+      padding: const EdgeInsets.all(16),
+      children: [
+        SingleChildScrollView(
+          scrollDirection: Axis.horizontal,
+          child: Table(
+            defaultColumnWidth: const IntrinsicColumnWidth(),
+            border: TableBorder.all(
+              color: AppColors.textPrimary.withValues(alpha: 0.08),
+            ),
+            children: [
+              TableRow(
+                decoration: BoxDecoration(color: AppColors.surface),
+                children: headers
+                    .map(
+                      (h) => Padding(
+                        padding: const EdgeInsets.all(10),
+                        child: Text(
+                          h,
+                          style: const TextStyle(
+                            color: AppColors.primary,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 11,
+                          ),
+                        ),
+                      ),
+                    )
+                    .toList(),
+              ),
+              ...rows.map((row) {
+                final cells = (row is Map && row['value'] is List)
+                    ? (row['value'] as List).map((e) => e.toString()).toList()
+                    : <String>[];
+                return TableRow(
+                  children: cells.asMap().entries.map((entry) {
+                    final i = entry.key;
+                    final v = entry.value;
+                    final isLikelyImageId = i == 1 && int.tryParse(v) != null;
+                    if (isLikelyImageId) {
+                      return Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: CachedNetworkImage(
+                          imageUrl:
+                              'https://static.cricbuzz.com/a/img/v1/i1/c$v/i.jpg',
+                          width: 32,
+                          height: 32,
+                          fit: BoxFit.cover,
+                          errorWidget: (_, __, ___) => const SizedBox(
+                            width: 32,
+                            height: 32,
+                          ),
+                        ),
+                      );
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: Text(
+                        v,
+                        style: const TextStyle(
+                          color: AppColors.textPrimary,
+                          fontSize: 12,
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                );
+              }),
+            ],
+          ),
+        ),
+        if (subText.isNotEmpty) ...[
+          const SizedBox(height: 20),
+          Text(
+            subText,
+            style: const TextStyle(
+              color: AppColors.textMuted,
+              fontSize: 11,
+              height: 1.45,
+            ),
+          ),
+        ],
+      ],
     );
   }
 }

@@ -17,9 +17,9 @@ class SeriesModel {
     return SeriesModel(
       id: json['id']?.toString() ?? '',
       name: json['name'] ?? '',
-      startDatestamp: json['startDatestamp']?.toString() ?? '',
-      endDatestamp: json['endDatestamp']?.toString() ?? '',
-      seriesType: json['seriesType'] ?? '',
+      startDatestamp: (json['startDt'] ?? json['startDatestamp'])?.toString() ?? '',
+      endDatestamp: (json['endDt'] ?? json['endDatestamp'])?.toString() ?? '',
+      seriesType: json['seriesType']?.toString() ?? '',
     );
   }
 }

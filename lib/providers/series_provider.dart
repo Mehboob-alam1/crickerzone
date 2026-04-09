@@ -16,17 +16,23 @@ class SeriesProvider with ChangeNotifier {
 
     try {
       final response = await SeriesApi.getInternationalSeries();
-      if (response != null && response['seriesList'] != null) {
-        List<SeriesModel> list = [];
-        for (var item in response['seriesList']) {
-          if (item['series'] != null) {
-            for (var s in item['series']) {
-              list.add(SeriesModel.fromJson(s));
-            }
+      if (response == null) return;
+
+      final List<dynamic> groups =
+          (response['seriesMapProto'] ?? response['seriesList']) as List? ?? [];
+
+      final List<SeriesModel> list = [];
+      for (final item in groups) {
+        if (item is! Map<String, dynamic>) continue;
+        final series = item['series'];
+        if (series is! List) continue;
+        for (final s in series) {
+          if (s is Map<String, dynamic>) {
+            list.add(SeriesModel.fromJson(s));
           }
         }
-        _seriesList = list;
       }
+      _seriesList = list;
     } catch (e) {
       debugPrint('Error fetching series: $e');
     } finally {

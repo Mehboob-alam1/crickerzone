@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:animate_do/animate_do.dart';
 import '../../providers/team_provider.dart';
+import '../../models/team_model.dart';
 import '../../core/constants/colors.dart';
 import '../../widgets/team_card.dart';
 import 'team_detail_screen.dart';
@@ -42,6 +43,15 @@ class _TeamsScreenState extends State<TeamsScreen> {
                 child: CircularProgressIndicator(color: AppColors.primary));
           }
 
+          if (!provider.isLoading && provider.teams.isEmpty) {
+            return Center(
+              child: Text(
+                'Nessuna squadra disponibile',
+                style: TextStyle(color: AppColors.textMuted),
+              ),
+            );
+          }
+
           return Column(
             children: [
               Padding(
@@ -65,37 +75,102 @@ class _TeamsScreenState extends State<TeamsScreen> {
                 ),
               ),
               Expanded(
-                child: GridView.builder(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 16,
-                    mainAxisSpacing: 16,
-                    childAspectRatio: 0.8,
-                  ),
-                  itemCount: provider.teams.length,
-                  itemBuilder: (context, index) {
-                    return TeamCard(
-                      team: provider.teams[index],
-                      index: index,
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TeamDetailScreen(
-                                teamId: provider.teams[index].id),
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
+                child: _TeamListWithSections(teams: provider.teams),
               ),
             ],
           );
         },
       ),
+    );
+  }
+}
+
+class _TeamListWithSections extends StatelessWidget {
+  final List<TeamModel> teams;
+
+  const _TeamListWithSections({required this.teams});
+
+  @override
+  Widget build(BuildContext context) {
+    final children = <Widget>[];
+    var chunk = <TeamModel>[];
+    var gridIndex = 0;
+
+    void flushChunk() {
+      if (chunk.isEmpty) return;
+      children.add(
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 0.8,
+            ),
+            itemCount: chunk.length,
+            itemBuilder: (context, i) {
+              final team = chunk[i];
+              final idx = gridIndex++;
+              return TeamCard(
+                team: team,
+                index: idx,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => TeamDetailScreen(teamId: team.id),
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ),
+      );
+      chunk = [];
+    }
+
+    for (final t in teams) {
+      if (t.isSectionHeader) {
+        flushChunk();
+        children.add(
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 20, 16, 8),
+            child: Text(
+              t.name.toUpperCase(),
+              style: const TextStyle(
+                color: AppColors.primary,
+                fontSize: 13,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 1.2,
+              ),
+            ),
+          ),
+        );
+      } else if (t.id.isNotEmpty) {
+        chunk.add(t);
+      }
+    }
+    flushChunk();
+
+    if (children.isEmpty) {
+      return const Center(
+        child: Padding(
+          padding: EdgeInsets.all(24),
+          child: Text(
+            'Nessuna squadra in elenco',
+            style: TextStyle(color: AppColors.textMuted),
+          ),
+        ),
+      );
+    }
+
+    return ListView(
+      padding: const EdgeInsets.only(bottom: 24),
+      children: children,
     );
   }
 }

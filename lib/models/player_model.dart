@@ -12,6 +12,9 @@ class PlayerModel {
   final String runs;
   final String average;
   final Map<String, dynamic>? stats;
+  final String? bio;
+  final String? nickName;
+  final String? teamsClubs;
 
   PlayerModel({
     required this.id,
@@ -27,24 +30,41 @@ class PlayerModel {
     this.runs = 'N/A',
     this.average = 'N/A',
     this.stats,
+    this.bio,
+    this.nickName,
+    this.teamsClubs,
   });
 
+  static String _resolveImageUrl(Map<String, dynamic> json) {
+    final direct = json['image']?.toString();
+    if (direct != null && direct.isNotEmpty) return direct;
+    final fid = json['faceImageId'] ?? json['imageId'];
+    if (fid == null) return '';
+    return 'https://static.cricbuzz.com/a/img/v1/i1/c$fid/i.jpg';
+  }
+
   factory PlayerModel.fromJson(Map<String, dynamic> json) {
+    final roleField = json['role']?.toString() ?? '';
+    final teamName = json['teamName']?.toString();
+
     return PlayerModel(
       id: json['id']?.toString() ?? json['playerId']?.toString() ?? '',
-      name: json['name'] ?? '',
-      role: json['role'] ?? json['teamName'] ?? '',
-      image: (json['faceImageId'] != null || json['imageId'] != null)
-          ? 'https://static.cricbuzz.com/a/img/v1/i1/c${json['faceImageId'] ?? json['imageId']}/i.jpg'
-          : '',
-      dob: json['dob']?.toString(),
-      birthPlace: json['birthPlace'],
-      height: json['height'],
-      batStyle: json['bat'],
-      bowlStyle: json['bowl'],
-      team: json['teamName'] ?? json['intlTeam'],
-      // runs: json['runs']?.toString() ?? 'N/A',
+      name: json['name']?.toString() ?? '',
+      role: roleField.isNotEmpty ? roleField : (teamName ?? ''),
+      image: _resolveImageUrl(json),
+      dob: json['DoB']?.toString() ??
+          json['DoBFormat']?.toString() ??
+          json['dob']?.toString(),
+      birthPlace: json['birthPlace']?.toString(),
+      height: json['height']?.toString(),
+      batStyle: json['bat']?.toString(),
+      bowlStyle: json['bowl']?.toString(),
+      team: json['intlTeam']?.toString() ?? teamName,
+      runs: json['runs']?.toString() ?? 'N/A',
       average: json['avg']?.toString() ?? 'N/A',
+      bio: json['bio']?.toString(),
+      nickName: json['nickName']?.toString(),
+      teamsClubs: json['teams']?.toString(),
     );
   }
 }

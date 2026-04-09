@@ -25,7 +25,9 @@ class RankingModel {
       country: json['country'],
       rating: json['rating']?.toString(),
       points: json['points']?.toString(),
-      imageId: json['faceId']?.toString() ?? json['imageId']?.toString(),
+      imageId: json['faceImageId']?.toString() ??
+          json['faceId']?.toString() ??
+          json['imageId']?.toString(),
     );
   }
 }

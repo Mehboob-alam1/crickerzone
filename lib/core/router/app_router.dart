@@ -8,6 +8,7 @@ import '../../screens/team/team_detail_screen.dart';
 import '../../screens/team/teams_screen.dart';
 import '../../screens/series/series_screen.dart';
 import '../../screens/news/news_screen.dart';
+import '../../screens/news/news_detail_screen.dart';
 import '../../screens/rankings/rankings_screen.dart';
 import '../../screens/videos/videos_screen.dart';
 import '../../screens/notifications/notifications_screen.dart';
@@ -77,6 +78,13 @@ class AppRouter {
       GoRoute(
         path: '/series',
         builder: (context, state) => const SeriesScreen(),
+      ),
+      GoRoute(
+        path: '/news/article/:id',
+        builder: (context, state) {
+          final id = state.pathParameters['id']!;
+          return NewsDetailScreen(newsId: id);
+        },
       ),
       GoRoute(
         path: '/news',

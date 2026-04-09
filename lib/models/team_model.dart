@@ -5,6 +5,8 @@ class TeamModel {
   final String logo;
   final String description;
   final List<String> squad;
+  /// Righe solo titolo da `teams/list` (es. "Test Teams", "Associate Teams").
+  final bool isSectionHeader;
 
   TeamModel({
     required this.id,
@@ -13,18 +15,23 @@ class TeamModel {
     required this.logo,
     required this.description,
     required this.squad,
+    this.isSectionHeader = false,
   });
 
   factory TeamModel.fromJson(Map<String, dynamic> json) {
+    final teamId = json['teamId'];
+    final isHeader = teamId == null;
+    final name = json['teamName']?.toString() ?? json['name']?.toString() ?? '';
     return TeamModel(
-      id: json['teamId']?.toString() ?? '',
-      name: json['teamName'] ?? '',
-      code: json['teamSName'] ?? '',
+      id: isHeader ? '' : teamId.toString(),
+      name: name,
+      code: json['teamSName']?.toString() ?? '',
       logo: json['imageId'] != null
           ? 'https://static.cricbuzz.com/a/img/v1/i1/c${json['imageId']}/i.jpg'
           : '',
-      description: '', // Description usually comes from a different detail API
-      squad: [], // Squad usually comes from a different detail API
+      description: '',
+      squad: [],
+      isSectionHeader: isHeader,
     );
   }
 }
