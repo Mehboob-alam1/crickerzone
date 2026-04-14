@@ -1,5 +1,5 @@
-/// Estrae paragrafi testuali da `news/detail`, applicando sostituzioni
-/// `format` (links / urls) come nell'app Cricbuzz.
+/// Extracts text paragraphs from `news/detail`, applying `format` link/url
+/// substitutions similar to the Cricbuzz app.
 List<String> parseNewsDetailParagraphs(Map<String, dynamic> detail) {
   final urlMap = <String, String>{};
   final linkMap = <String, String>{};

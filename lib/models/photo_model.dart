@@ -20,7 +20,7 @@ class PhotoModel {
         final timestamp = int.tryParse(json['publishedTime'].toString());
         if (timestamp != null) {
           final date = DateTime.fromMillisecondsSinceEpoch(timestamp);
-          formattedTime = DateFormat('dd MMM yyyy').format(date);
+          formattedTime = DateFormat('dd MMM yyyy', 'en_US').format(date);
         }
       } catch (e) {
         formattedTime = json['publishedTime'].toString();

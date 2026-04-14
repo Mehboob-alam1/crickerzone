@@ -34,7 +34,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.primary),
           onPressed: () => context.pop(),
         ),
-        title: const Text('Articolo', style: TextStyle(fontSize: 16)),
+        title: const Text('Article', style: TextStyle(fontSize: 16)),
       ),
       body: Consumer<NewsProvider>(
         builder: (context, provider, _) {
@@ -48,7 +48,7 @@ class _NewsDetailScreenState extends State<NewsDetailScreen> {
           if (d == null) {
             return const Center(
               child: Text(
-                'Articolo non disponibile',
+                'Article unavailable',
                 style: TextStyle(color: AppColors.textMuted),
               ),
             );

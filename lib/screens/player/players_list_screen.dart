@@ -61,7 +61,7 @@ class _PlayersListScreenState extends State<PlayersListScreen> {
                     height: 240,
                     child: Center(
                       child: Text(
-                        'Nessun giocatore in evidenza',
+                        'No featured players',
                         style: TextStyle(color: AppColors.textMuted),
                       ),
                     ),

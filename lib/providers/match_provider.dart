@@ -7,6 +7,7 @@ class MatchProvider with ChangeNotifier {
   List<MatchModel> _matches = [];
   List<MatchScheduleModel> _matchSchedules = [];
   bool _isLoading = false;
+  String? _matchesLoadError;
   Map<String, dynamic>? _matchScorecard;
   Map<String, dynamic>? _matchCommentary;
   Map<String, dynamic>? _matchInfo;
@@ -15,6 +16,7 @@ class MatchProvider with ChangeNotifier {
   List<MatchModel> get matches => _matches;
   List<MatchScheduleModel> get matchSchedules => _matchSchedules;
   bool get isLoading => _isLoading;
+  String? get matchesLoadError => _matchesLoadError;
   Map<String, dynamic>? get matchScorecard => _matchScorecard;
   Map<String, dynamic>? get matchCommentary => _matchCommentary;
   Map<String, dynamic>? get matchInfo => _matchInfo;
@@ -49,6 +51,7 @@ class MatchProvider with ChangeNotifier {
   Future<void> fetchMatches({bool forceRefresh = false}) async {
     if (_isLoading) return;
     _isLoading = true;
+    _matchesLoadError = null;
     notifyListeners();
 
     try {
@@ -62,13 +65,20 @@ class MatchProvider with ChangeNotifier {
       allMatches.addAll(_parseMatches(recentData, 'Recent'));
 
       _matches = allMatches;
-    } catch (e) {
-      debugPrint('Matches restricted or error: $e');
+      _matchesLoadError = null;
+    } catch (e, st) {
+      debugPrint('Matches restricted or error: $e\n$st');
+      _matchesLoadError = e.toString();
       _matches = [];
     } finally {
       _isLoading = false;
       notifyListeners();
     }
+  }
+
+  void clearMatchesLoadError() {
+    _matchesLoadError = null;
+    notifyListeners();
   }
 
   List<MatchModel> _parseMatches(dynamic data, String type) {

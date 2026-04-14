@@ -29,7 +29,7 @@ class NewsModel {
         final timestamp = int.tryParse(rawTime.toString());
         if (timestamp != null) {
           final date = DateTime.fromMillisecondsSinceEpoch(timestamp);
-          formattedTime = DateFormat('dd MMM yyyy • hh:mm a').format(date);
+          formattedTime = DateFormat('dd MMM yyyy • hh:mm a', 'en_US').format(date);
         }
       } catch (e) {
         formattedTime = rawTime.toString();

@@ -595,7 +595,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
 
   Widget _buildSquadPlayerList(List<Map<String, dynamic>> players) {
     if (players.isEmpty) {
-      return const Text('Nessun giocatore in elenco', style: TextStyle(color: AppColors.textMuted, fontSize: 12));
+      return const Text('No players listed', style: TextStyle(color: AppColors.textMuted, fontSize: 12));
     }
     final playing = players.where((p) => p['substitute'] != true).toList();
     final bench = players.where((p) => p['substitute'] == true).toList();
@@ -603,13 +603,13 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         if (playing.isNotEmpty) ...[
-          const Text('In campo', style: TextStyle(color: AppColors.textMuted, fontSize: 11, fontWeight: FontWeight.bold)),
+          const Text('Playing XI', style: TextStyle(color: AppColors.textMuted, fontSize: 11, fontWeight: FontWeight.bold)),
           const SizedBox(height: 6),
           ...playing.map(_buildSquadPlayerRow),
         ],
         if (bench.isNotEmpty) ...[
           const SizedBox(height: 12),
-          const Text('Panchina / riserve', style: TextStyle(color: AppColors.textMuted, fontSize: 11, fontWeight: FontWeight.bold)),
+          const Text('Bench / reserves', style: TextStyle(color: AppColors.textMuted, fontSize: 11, fontWeight: FontWeight.bold)),
           const SizedBox(height: 6),
           ...bench.map(_buildSquadPlayerRow),
         ],
@@ -852,7 +852,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen> with SingleTicker
           _buildInfoRow(
             'Match Days',
             matchInfo['matchStartTimestamp'] != null
-                ? DateFormat('dd MMMM yyyy').format(
+                ? DateFormat('dd MMMM yyyy', 'en_US').format(
                     DateTime.fromMillisecondsSinceEpoch(int.parse(matchInfo['matchStartTimestamp'].toString())),
                   )
                 : 'N/A',

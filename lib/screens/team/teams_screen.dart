@@ -40,7 +40,8 @@ class _TeamsScreenState extends State<TeamsScreen> {
         builder: (context, provider, child) {
           if (provider.isLoading && provider.teams.isEmpty) {
             return const Center(
-                child: CircularProgressIndicator(color: AppColors.primary));
+              child: CircularProgressIndicator(color: AppColors.primary),
+            );
           }
 
           if (!provider.isLoading && provider.teams.isEmpty) {
@@ -50,11 +51,40 @@ class _TeamsScreenState extends State<TeamsScreen> {
                 physics: const AlwaysScrollableScrollPhysics(),
                 children: [
                   SizedBox(
-                    height: MediaQuery.of(context).size.height * 0.35,
+                    height: MediaQuery.of(context).size.height * 0.4,
                     child: Center(
-                      child: Text(
-                        'Nessuna squadra disponibile',
-                        style: TextStyle(color: AppColors.textMuted),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 32),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(
+                              Icons.groups_outlined,
+                              size: 64,
+                              color: AppColors.textMuted,
+                            ),
+                            const SizedBox(height: 16),
+                            const Text(
+                              'No teams available',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: AppColors.textPrimary,
+                                fontSize: 17,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(height: 8),
+                            const Text(
+                              'Pull to refresh or try again later.',
+                              textAlign: TextAlign.center,
+                              style: TextStyle(
+                                color: AppColors.textMuted,
+                                fontSize: 14,
+                                height: 1.35,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -112,6 +142,12 @@ class _TeamListWithSections extends StatelessWidget {
 
     void flushChunk() {
       if (chunk.isEmpty) return;
+      // Snapshot: itemBuilder runs after chunk is cleared for the next section;
+      // without a copy, chunk[i] throws RangeError.
+      final tiles = List<TeamModel>.from(chunk);
+      final baseIndex = gridIndex;
+      gridIndex += tiles.length;
+      chunk = [];
       children.add(
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -124,10 +160,10 @@ class _TeamListWithSections extends StatelessWidget {
               mainAxisSpacing: 16,
               childAspectRatio: 0.8,
             ),
-            itemCount: chunk.length,
+            itemCount: tiles.length,
             itemBuilder: (context, i) {
-              final team = chunk[i];
-              final idx = gridIndex++;
+              final team = tiles[i];
+              final idx = baseIndex + i;
               return TeamCard(
                 team: team,
                 index: idx,
@@ -144,7 +180,6 @@ class _TeamListWithSections extends StatelessWidget {
           ),
         ),
       );
-      chunk = [];
     }
 
     for (final t in teams) {
@@ -171,14 +206,25 @@ class _TeamListWithSections extends StatelessWidget {
     flushChunk();
 
     if (children.isEmpty) {
-      return const Center(
-        child: Padding(
-          padding: EdgeInsets.all(24),
-          child: Text(
-            'Nessuna squadra in elenco',
-            style: TextStyle(color: AppColors.textMuted),
+      return ListView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        children: const [
+          SizedBox(height: 120),
+          Icon(Icons.filter_list_off_outlined, size: 56, color: AppColors.textMuted),
+          SizedBox(height: 16),
+          Padding(
+            padding: EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              'No teams in this list',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: AppColors.textPrimary,
+                fontSize: 16,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
           ),
-        ),
+        ],
       );
     }
 

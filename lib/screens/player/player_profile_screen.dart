@@ -71,7 +71,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                     height: 280,
                     child: Center(
                       child: Text(
-                        'Profilo non disponibile',
+                        'Profile unavailable',
                         style: TextStyle(color: AppColors.textMuted),
                       ),
                     ),
@@ -105,7 +105,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
                       const SizedBox(height: 12),
                       _buildStatsTable(provider.playerBowling),
                       const SizedBox(height: 28),
-                      _buildSectionTitle('FORMATI & DEBUT'),
+                      _buildSectionTitle('FORMATS & DEBUT'),
                       const SizedBox(height: 12),
                       _buildCareerFormats(provider.playerCareer),
                       const SizedBox(height: 32),
@@ -352,7 +352,7 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
 
     if (headers.isEmpty || rows.isEmpty) {
       return const Text(
-        'Nessun dato',
+        'No data',
         style: TextStyle(color: AppColors.textMuted, fontSize: 13),
       );
     }
@@ -412,13 +412,13 @@ class _PlayerProfileScreenState extends State<PlayerProfileScreen> {
   Widget _buildCareerFormats(List<dynamic>? career) {
     if (career == null) {
       return const Text(
-        'Caricamento…',
+        'Loading…',
         style: TextStyle(color: AppColors.textMuted, fontSize: 13),
       );
     }
     if (career.isEmpty) {
       return const Text(
-        'Dati carriera non disponibili',
+        'Career data unavailable',
         style: TextStyle(color: AppColors.textMuted, fontSize: 13),
       );
     }

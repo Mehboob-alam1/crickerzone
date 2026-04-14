@@ -212,7 +212,7 @@ class _RankingsScreenState extends State<RankingsScreen> {
               height: 280,
               child: Center(
                 child: Text(
-                  'Classifica WTC non disponibile',
+                  'WTC standings unavailable',
                   style: TextStyle(color: AppColors.textMuted),
                 ),
               ),
@@ -237,7 +237,7 @@ class _RankingsScreenState extends State<RankingsScreen> {
               height: 280,
               child: Center(
                 child: Text(
-                  'Nessun dato WTC',
+                  'No WTC data',
                   style: TextStyle(color: AppColors.textMuted),
                 ),
               ),

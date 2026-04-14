@@ -39,7 +39,7 @@ class _NewsScreenState extends State<NewsScreen> {
               const Padding(
                 padding: EdgeInsets.all(16),
                 child: Text(
-                  'Categorie',
+                  'Categories',
                   style: TextStyle(
                     color: AppColors.textPrimary,
                     fontWeight: FontWeight.bold,
@@ -48,7 +48,7 @@ class _NewsScreenState extends State<NewsScreen> {
                 ),
               ),
               ListTile(
-                title: const Text('Tutte le news', style: TextStyle(color: AppColors.textPrimary)),
+                title: const Text('All news', style: TextStyle(color: AppColors.textPrimary)),
                 leading: const Icon(Icons.list_alt, color: AppColors.primary),
                 onTap: () {
                   Navigator.pop(ctx);
@@ -96,7 +96,7 @@ class _NewsScreenState extends State<NewsScreen> {
               return IconButton(
                 icon: const Icon(Icons.filter_list_rounded),
                 onPressed: provider.categories.isEmpty ? null : () => _showCategorySheet(provider),
-                tooltip: 'Categoria',
+                tooltip: 'Category',
               );
             },
           ),
@@ -138,7 +138,7 @@ class _NewsScreenState extends State<NewsScreen> {
                   SizedBox(
                     height: 240,
                     child: Center(
-                      child: Text('Nessuna news', style: TextStyle(color: AppColors.textMuted)),
+                      child: Text('No news yet', style: TextStyle(color: AppColors.textMuted)),
                     ),
                   ),
                 ],

@@ -91,7 +91,7 @@ class ScheduleMatchCard extends StatelessWidget {
                 ),
               ),
               Text(
-                DateFormat('MMM dd, hh:mm a').format(match.startDate),
+                DateFormat('MMM dd, hh:mm a', 'en_US').format(match.startDate),
                 style: const TextStyle(
                   color: AppColors.textPrimary,
                   fontWeight: FontWeight.w500,
