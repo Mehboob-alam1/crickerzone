@@ -7,6 +7,12 @@ class RankingModel {
   final String? points;
   final String? imageId;
 
+  String? get imageUrl {
+    final id = imageId;
+    if (id == null || id.isEmpty) return null;
+    return 'https://static.cricbuzz.com/a/img/v1/i1/c$id/i.jpg';
+  }
+
   RankingModel({
     this.id,
     this.rank,

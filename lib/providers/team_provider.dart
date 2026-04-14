@@ -17,10 +17,22 @@ class TeamProvider with ChangeNotifier {
     try {
       final response = await TeamApi.getTeams(forceRefresh: forceRefresh);
       if (response != null && response['list'] != null) {
-        _teams = (response['list'] as List)
-            .map((e) => Map<String, dynamic>.from(e as Map))
-            .map(TeamModel.fromJson)
-            .toList();
+        String? currentCategory;
+        _teams = (response['list'] as List).map((e) {
+          final json = Map<String, dynamic>.from(e as Map);
+          final isSectionHeader = json['teamId'] == null;
+          final name =
+              json['teamName']?.toString() ?? json['name']?.toString() ?? '';
+
+          if (isSectionHeader) {
+            currentCategory = name;
+          }
+
+          return TeamModel.fromJson(
+            json,
+            category: currentCategory,
+          );
+        }).toList();
       }
     } catch (e) {
       debugPrint('Teams restricted or error: $e');
