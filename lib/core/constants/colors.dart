@@ -176,6 +176,47 @@ class AppColors {
   static const Color warningTint   = Color(0x1AFFB300);
   static const Color info          = Color(0xFF29B6F6);
   static const Color infoTint      = Color(0x1A29B6F6);
+  static const Color gold          = Color(0xFFFFD700);
+  static const Color goldTint      = Color(0x1AFFD700);
+  static const Color formatTestDark = Color(0xFF4A0E14);
+  static const Color wtcSubtitle   = Color(0xFFECACB4);
+  static const Color categoryDomestic = Color(0xFF2E7D32);
+  static const Color categoryWomen = Color(0xFFAD1457);
+  static const Color categoryAbout = Color(0xFF00695C);
+  static const Color categoryNeutral = Color(0xFF37474F);
+  static const Color screenWarmHeader = Color(0xFF1A0D00);
+  static const Color screenWarmHeaderAlt = Color(0xFF1C0E00);
+  static const Color screenWarmHeaderSoft = Color(0xFF1A0B00);
+  static const Color screenWarmHeaderDeep = Color(0xFF1A1200);
+  static const Color screenWarmHeaderLive = Color(0xFF1A0600);
+  static const Color screenCrimsonHeader = Color(0xFF1C0808);
+  static const Color screenAboutHeaderTop = Color(0xFF1C1000);
+  static const Color screenAboutHeaderMid = Color(0xFF0E0800);
+  static const Color screenNavyHeader = Color(0xFF0A1020);
+  static const Color screenNavy = Color(0xFF080C14);
+  static const Color screenNavyGradient = Color(0xFF0D1520);
+  static const Color screenNavySurface = Color(0xFF0F1520);
+  static const Color screenNavyCard = Color(0xFF0D1420);
+  static const Color screenNavyChip = Color(0xFF141C28);
+  static const Color screenNavyBorder = Color(0xFF1A2234);
+  static const Color screenNavyBorderAlt = Color(0xFF1E2A3A);
+  static const Color screenNavyIcon = Color(0xFF2A3550);
+  static const Color surfaceInset   = Color(0xFF1A1714);
+  static const Color socialTwitter = Color(0xFF1DA1F2);
+  static const Color socialFacebook = Color(0xFF1877F2);
+  static const Color socialInstagram = Color(0xFFE1306C);
+  static const Color socialYoutube = Color(0xFFFF0000);
+  static const Color indiaBlue     = Color(0xFF003580);
+  static const Color indiaOrange   = Color(0xFFFF671F);
+  static const Color australiaGreen = Color(0xFF00843D);
+  static const Color australiaGold = Color(0xFFFFCD00);
+  static const Color englandBlue   = Color(0xFF002868);
+  static const Color englandRed    = Color(0xFFCF142B);
+  static const Color pakistanGreen = Color(0xFF01411C);
+  static const Color liveMuted     = Color(0xFF3A2020);
+  static const Color liveAccent    = Color(0xFFFF7043);
+  static const Color shadowSoft    = Color(0x14000000);
+  static const Color shadowMedium  = Color(0x18000000);
 
   // ─── GRADIENT HELPERS ─────────────────────────────────────────────────────
 

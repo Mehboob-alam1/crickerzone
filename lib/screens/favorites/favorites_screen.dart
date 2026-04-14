@@ -20,21 +20,21 @@ class _FavoritesScreenState extends State<FavoritesScreen>
 
   // Mock data — replace with real provider data
   final List<_FavTeam> _teams = [
-    _FavTeam('India', '🇮🇳', 'IND', const Color(0xFF003580), const Color(0xFFFF671F), isLive: true, score: '287/4 (45.2 ov)'),
-    _FavTeam('Australia', '🇦🇺', 'AUS', const Color(0xFF00843D), const Color(0xFFFFCD00)),
-    _FavTeam('England', '🏴', 'ENG', const Color(0xFF002868), const Color(0xFFCF142B)),
-    _FavTeam('Pakistan', '🇵🇰', 'PAK', const Color(0xFF01411C), const Color(0xFFFFFFFF)),
+    _FavTeam('India', '🇮🇳', 'IND', AppColors.indiaBlue, AppColors.indiaOrange, isLive: true, score: '287/4 (45.2 ov)'),
+    _FavTeam('Australia', '🇦🇺', 'AUS', AppColors.australiaGreen, AppColors.australiaGold),
+    _FavTeam('England', '🏴', 'ENG', AppColors.englandBlue, AppColors.englandRed),
+    _FavTeam('Pakistan', '🇵🇰', 'PAK', AppColors.pakistanGreen, AppColors.textPrimary),
   ];
 
   final List<_FavPlayer> _players = [
-    _FavPlayer('Virat Kohli', 'India', '🇮🇳', 'Batter', '59.07 avg', const Color(0xFFFF671F)),
-    _FavPlayer('Jasprit Bumrah', 'India', '🇮🇳', 'Bowler', '4.21 econ', const Color(0xFF003580)),
-    _FavPlayer('Steve Smith', 'Australia', '🇦🇺', 'Batter', '62.8 avg', const Color(0xFFFFCD00)),
+    _FavPlayer('Virat Kohli', 'India', '🇮🇳', 'Batter', '59.07 avg', AppColors.indiaOrange),
+    _FavPlayer('Jasprit Bumrah', 'India', '🇮🇳', 'Bowler', '4.21 econ', AppColors.indiaBlue),
+    _FavPlayer('Steve Smith', 'Australia', '🇦🇺', 'Batter', '62.8 avg', AppColors.australiaGold),
   ];
 
   final List<_FavSeries> _series = [
-    _FavSeries('India vs Australia 2025', 'Test Series', const Color(0xFF8D1B2A), '3 matches remaining'),
-    _FavSeries('IPL 2025', 'T20 League', const Color(0xFF6A1B9A), 'Starts in 12 days'),
+    _FavSeries('India vs Australia 2025', 'Test Series', AppColors.formatTest, '3 matches remaining'),
+    _FavSeries('IPL 2025', 'T20 League', AppColors.formatT20, 'Starts in 12 days'),
   ];
 
   @override
@@ -90,7 +90,7 @@ class _FavoritesScreenState extends State<FavoritesScreen>
           20, MediaQuery.of(context).padding.top + 14, 20, 16),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF1C0808), AppColors.background],
+          colors: [AppColors.screenCrimsonHeader, AppColors.background],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -103,14 +103,14 @@ class _FavoritesScreenState extends State<FavoritesScreen>
             height: 44,
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFFE53935), Color(0xFFB71C1C)],
+                colors: [AppColors.live, AppColors.liveDark],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(13),
               boxShadow: [
                 BoxShadow(
-                  color: const Color(0xFFE53935).withOpacity(0.35),
+                  color: AppColors.live.withOpacity(0.35),
                   blurRadius: 14,
                   offset: const Offset(0, 4),
                 ),
@@ -127,43 +127,49 @@ class _FavoritesScreenState extends State<FavoritesScreen>
             ),
           ),
           const SizedBox(width: 14),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                'FAVOURITES',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 19,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.4,
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'FAVOURITES',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 19,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.4,
+                  ),
                 ),
-              ),
-              Text(
-                'Your saved teams, players & series',
-                style: TextStyle(
-                  color: AppColors.textMuted,
-                  fontSize: 11,
-                  letterSpacing: 0.2,
+                Text(
+                  'Your saved teams, players & series',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 11,
+                    letterSpacing: 0.2,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const Spacer(),
+          const SizedBox(width: 12),
           // Total count badge
           Container(
             padding: const EdgeInsets.symmetric(
                 horizontal: 10, vertical: 5),
             decoration: BoxDecoration(
-              color: const Color(0xFFE53935).withOpacity(0.10),
+              color: AppColors.live.withOpacity(0.10),
               borderRadius: BorderRadius.circular(10),
               border: Border.all(
-                  color: const Color(0xFFE53935).withOpacity(0.22)),
+                  color: AppColors.live.withOpacity(0.22)),
             ),
             child: Text(
               '${_teams.length + _players.length + _series.length}',
               style: const TextStyle(
-                color: Color(0xFFE53935),
+                color: AppColors.live,
                 fontSize: 13,
                 fontWeight: FontWeight.w800,
               ),
@@ -190,11 +196,11 @@ class _FavoritesScreenState extends State<FavoritesScreen>
         controller: _tabCtrl,
         padding: EdgeInsets.zero,
         indicator: BoxDecoration(
-          color: const Color(0xFFE53935),
+          color: AppColors.live,
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
             BoxShadow(
-              color: const Color(0xFFE53935).withOpacity(0.38),
+              color: AppColors.live.withOpacity(0.38),
               blurRadius: 10,
               spreadRadius: -2,
             ),
@@ -379,15 +385,15 @@ class _FavoritesScreenState extends State<FavoritesScreen>
               height: 90,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: const Color(0xFFE53935)
+                color: AppColors.live
                     .withOpacity(0.06 + _pulseAnim.value * 0.04),
                 border: Border.all(
-                  color: const Color(0xFFE53935)
+                  color: AppColors.live
                       .withOpacity(0.12 + _pulseAnim.value * 0.08),
                 ),
               ),
               child: Icon(icon,
-                  size: 38, color: const Color(0xFF3A2020)),
+                  size: 38, color: AppColors.liveMuted),
             ),
           ),
           const SizedBox(height: 20),
@@ -424,12 +430,12 @@ class _FavoritesScreenState extends State<FavoritesScreen>
                     horizontal: 24, vertical: 12),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFFE53935), Color(0xFFB71C1C)],
+                    colors: [AppColors.live, AppColors.liveDark],
                   ),
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFE53935).withOpacity(0.30),
+                      color: AppColors.live.withOpacity(0.30),
                       blurRadius: 14,
                       offset: const Offset(0, 4),
                     ),
@@ -482,7 +488,7 @@ class _TeamCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(18),
         border: Border.all(
           color: team.isLive
-              ? const Color(0xFFE53935).withOpacity(0.28)
+              ? AppColors.live.withOpacity(0.28)
               : Colors.white.withOpacity(0.06),
         ),
       ),
@@ -537,32 +543,34 @@ class _TeamCard extends StatelessWidget {
                       children: [
                         Row(
                           children: [
-                            Text(
-                              team.name,
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 15,
-                                fontWeight: FontWeight.w700,
+                            Expanded(
+                              child: Text(
+                                team.name,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            // Live badge
-                            if (team.isLive)
+                            if (team.isLive) ...[
+                              const SizedBox(width: 8),
                               AnimatedBuilder(
                                 animation: pulseAnim,
                                 builder: (_, __) => Container(
-                                  padding:
-                                  const EdgeInsets.symmetric(
-                                      horizontal: 6, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: const Color(0xFFE53935)
-                                        .withOpacity(0.10 +
-                                        pulseAnim.value * 0.08),
-                                    borderRadius:
-                                    BorderRadius.circular(5),
+                                    color: AppColors.live.withOpacity(
+                                      0.10 + pulseAnim.value * 0.08,
+                                    ),
+                                    borderRadius: BorderRadius.circular(5),
                                     border: Border.all(
-                                      color: const Color(0xFFE53935)
-                                          .withOpacity(0.35),
+                                      color: AppColors.live.withOpacity(0.35),
                                     ),
                                   ),
                                   child: Row(
@@ -572,9 +580,9 @@ class _TeamCard extends StatelessWidget {
                                         width: 4,
                                         height: 4,
                                         decoration: BoxDecoration(
-                                          color: const Color(0xFFE53935)
-                                              .withOpacity(
-                                              0.6 + pulseAnim.value * 0.4),
+                                          color: AppColors.live.withOpacity(
+                                            0.6 + pulseAnim.value * 0.4,
+                                          ),
                                           shape: BoxShape.circle,
                                         ),
                                       ),
@@ -582,7 +590,7 @@ class _TeamCard extends StatelessWidget {
                                       const Text(
                                         'LIVE',
                                         style: TextStyle(
-                                          color: Color(0xFFE53935),
+                                          color: AppColors.live,
                                           fontSize: 8,
                                           fontWeight: FontWeight.w800,
                                           letterSpacing: 0.5,
@@ -592,17 +600,22 @@ class _TeamCard extends StatelessWidget {
                                   ),
                                 ),
                               ),
+                            ],
                           ],
                         ),
                         const SizedBox(height: 4),
-                        Row(
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2),
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
-                                color:
-                                team.primaryColor.withOpacity(0.12),
+                                color: team.primaryColor.withOpacity(0.12),
                                 borderRadius: BorderRadius.circular(5),
                               ),
                               child: Text(
@@ -615,8 +628,7 @@ class _TeamCard extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            if (team.score != null) ...[
-                              const SizedBox(width: 8),
+                            if (team.score != null)
                               Text(
                                 team.score!,
                                 style: const TextStyle(
@@ -625,7 +637,6 @@ class _TeamCard extends StatelessWidget {
                                   fontWeight: FontWeight.w600,
                                 ),
                               ),
-                            ],
                           ],
                         ),
                       ],
@@ -639,12 +650,12 @@ class _TeamCard extends StatelessWidget {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE53935).withOpacity(0.08),
+                        color: AppColors.live.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
                         Icons.favorite_rounded,
-                        color: Color(0xFFE53935),
+                        color: AppColors.live,
                         size: 15,
                       ),
                     ),
@@ -663,7 +674,7 @@ class _TeamCard extends StatelessWidget {
                   height: 2,
                   decoration: const BoxDecoration(
                     gradient: LinearGradient(
-                      colors: [Color(0xFFE53935), Color(0xFFFF7043)],
+                      colors: [AppColors.live, AppColors.liveAccent],
                     ),
                   ),
                 ),
@@ -747,6 +758,8 @@ class _PlayerCard extends StatelessWidget {
                       children: [
                         Text(
                           player.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                           style: const TextStyle(
                             color: Colors.white,
                             fontSize: 15,
@@ -754,21 +767,23 @@ class _PlayerCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 5),
-                        Row(
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
-                            Text(player.flag,
-                                style: const TextStyle(fontSize: 13)),
-                            const SizedBox(width: 5),
                             Text(
-                              player.country,
+                              '${player.flag} ${player.country}',
                               style: TextStyle(
-                                  color: AppColors.textMuted,
-                                  fontSize: 11),
+                                color: AppColors.textMuted,
+                                fontSize: 11,
+                              ),
                             ),
-                            const SizedBox(width: 8),
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2),
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: player.color.withOpacity(0.12),
                                 borderRadius: BorderRadius.circular(5),
@@ -782,7 +797,6 @@ class _PlayerCard extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
                             Text(
                               player.stat,
                               style: const TextStyle(
@@ -803,12 +817,12 @@ class _PlayerCard extends StatelessWidget {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE53935).withOpacity(0.08),
+                        color: AppColors.live.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
                         Icons.favorite_rounded,
-                        color: Color(0xFFE53935),
+                        color: AppColors.live,
                         size: 15,
                       ),
                     ),
@@ -888,16 +902,22 @@ class _SeriesCard extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 6),
-                        Row(
+                        Wrap(
+                          spacing: 8,
+                          runSpacing: 4,
+                          crossAxisAlignment: WrapCrossAlignment.center,
                           children: [
                             Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 6, vertical: 2),
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
                               decoration: BoxDecoration(
                                 color: series.color.withOpacity(0.12),
                                 borderRadius: BorderRadius.circular(5),
                                 border: Border.all(
-                                    color: series.color.withOpacity(0.25)),
+                                  color: series.color.withOpacity(0.25),
+                                ),
                               ),
                               child: Text(
                                 series.type,
@@ -909,16 +929,13 @@ class _SeriesCard extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Text(
-                                series.status,
-                                style: TextStyle(
-                                  color: AppColors.textMuted,
-                                  fontSize: 11,
-                                ),
-                                overflow: TextOverflow.ellipsis,
+                            Text(
+                              series.status,
+                              style: TextStyle(
+                                color: AppColors.textMuted,
+                                fontSize: 11,
                               ),
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ],
                         ),
@@ -932,12 +949,12 @@ class _SeriesCard extends StatelessWidget {
                       width: 32,
                       height: 32,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE53935).withOpacity(0.08),
+                        color: AppColors.live.withOpacity(0.08),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: const Icon(
                         Icons.favorite_rounded,
-                        color: Color(0xFFE53935),
+                        color: AppColors.live,
                         size: 15,
                       ),
                     ),

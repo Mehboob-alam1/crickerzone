@@ -76,7 +76,7 @@ class _AboutScreenState extends State<AboutScreen>
           24, MediaQuery.of(context).padding.top + 12, 24, 40),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF1C1000), Color(0xFF0E0800), AppColors.background],
+          colors: [AppColors.screenAboutHeaderTop, AppColors.screenAboutHeaderMid, AppColors.background],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
           stops: [0.0, 0.6, 1.0],
@@ -173,9 +173,9 @@ class _AboutScreenState extends State<AboutScreen>
                         shape: BoxShape.circle,
                         gradient: LinearGradient(
                           colors: [
-                            const Color(0xFFFFB300),
+                            AppColors.primaryLight,
                             AppColors.primary,
-                            const Color(0xFFE65100),
+                            AppColors.primaryDark,
                           ],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
@@ -318,7 +318,7 @@ class _AboutScreenState extends State<AboutScreen>
                       gradient: const LinearGradient(
                         colors: [
                           AppColors.primary,
-                          Color(0xFFE65100),
+                          AppColors.primaryDark,
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -360,16 +360,16 @@ class _AboutScreenState extends State<AboutScreen>
     const features = [
       _Feature('⚡', 'Live Scores',
           'Real-time ball-by-ball updates from every match worldwide.',
-          Color(0xFFFFA000)),
+          AppColors.primary),
       _Feature('📊', 'Deep Stats',
           'Comprehensive player and team statistics across all formats.',
-          Color(0xFF1565C0)),
+          AppColors.formatOdi),
       _Feature('🏆', 'ICC Rankings',
           'Official ICC rankings for teams, batters and bowlers.',
-          Color(0xFF6A1B9A)),
+          AppColors.formatT20),
       _Feature('🔔', 'Smart Alerts',
           'Get notified for wickets, milestones and match results.',
-          Color(0xFF2E7D32)),
+          AppColors.categoryDomestic),
     ];
 
     return FadeInUp(
@@ -379,8 +379,8 @@ class _AboutScreenState extends State<AboutScreen>
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(left: 4, bottom: 14),
+            const Padding(
+              padding: EdgeInsets.only(left: 4, bottom: 14),
               child: Text(
                 'FEATURES',
                 style: TextStyle(
@@ -434,7 +434,7 @@ class _AboutScreenState extends State<AboutScreen>
               icon: Icons.email_outlined,
               title: 'Contact Support',
               subtitle: 'support@scorezone.com',
-              color: const Color(0xFFFFA000),
+              color: AppColors.primary,
               onTap: () {},
             ),
             const SizedBox(height: 10),
@@ -442,7 +442,7 @@ class _AboutScreenState extends State<AboutScreen>
               icon: Icons.language_outlined,
               title: 'Official Website',
               subtitle: 'www.scorezone.com',
-              color: const Color(0xFF1565C0),
+              color: AppColors.formatOdi,
               onTap: () {},
             ),
             const SizedBox(height: 10),
@@ -450,7 +450,7 @@ class _AboutScreenState extends State<AboutScreen>
               icon: Icons.privacy_tip_outlined,
               title: 'Privacy Policy',
               subtitle: 'Read our terms & conditions',
-              color: const Color(0xFF6A1B9A),
+              color: AppColors.formatT20,
               onTap: () {},
             ),
             const SizedBox(height: 10),
@@ -458,7 +458,7 @@ class _AboutScreenState extends State<AboutScreen>
               icon: Icons.star_rate_rounded,
               title: 'Rate the App',
               subtitle: 'Love Score Zone? Leave a review!',
-              color: const Color(0xFF2E7D32),
+              color: AppColors.categoryDomestic,
               onTap: () {},
             ),
           ],
@@ -471,10 +471,10 @@ class _AboutScreenState extends State<AboutScreen>
 
   Widget _buildSocialRow() {
     const socials = [
-      _Social('𝕏', 'Twitter',   Color(0xFF1DA1F2)),
-      _Social('f', 'Facebook',  Color(0xFF1877F2)),
-      _Social('in', 'Instagram', Color(0xFFE1306C)),
-      _Social('▶', 'YouTube',   Color(0xFFFF0000)),
+      _Social('𝕏', 'Twitter',   AppColors.socialTwitter),
+      _Social('f', 'Facebook',  AppColors.socialFacebook),
+      _Social('in', 'Instagram', AppColors.socialInstagram),
+      _Social('▶', 'YouTube',   AppColors.socialYoutube),
     ];
 
     return FadeInUp(

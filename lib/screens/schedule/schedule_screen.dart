@@ -64,7 +64,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: SystemUiOverlayStyle.light,
       child: Scaffold(
-        backgroundColor: const Color(0xFF080C14),
+        backgroundColor: AppColors.screenNavy,
         body: FadeTransition(
           opacity: _fadeCtrl,
           child: Column(
@@ -116,7 +116,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
           20, MediaQuery.of(context).padding.top + 16, 20, 20),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF0D1520), Color(0xFF080C14)],
+          colors: [AppColors.screenNavyGradient, AppColors.screenNavy],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -173,11 +173,11 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                   padding: const EdgeInsets.symmetric(
                       horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
-                    color: const Color(0xFFE53935)
+                    color: AppColors.live
                         .withOpacity(0.12 + _pulseAnim.value * 0.08),
                     borderRadius: BorderRadius.circular(20),
                     border: Border.all(
-                      color: const Color(0xFFE53935)
+                      color: AppColors.live
                           .withOpacity(0.35 + _pulseAnim.value * 0.25),
                     ),
                   ),
@@ -188,7 +188,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                         width: 6,
                         height: 6,
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE53935).withOpacity(
+                          color: AppColors.live.withOpacity(
                               0.6 + _pulseAnim.value * 0.4),
                           shape: BoxShape.circle,
                         ),
@@ -199,7 +199,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                         style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.w800,
-                          color: Color(0xFFE53935),
+                          color: AppColors.live,
                           letterSpacing: 0.8,
                         ),
                       ),
@@ -217,9 +217,9 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             width: 38,
             height: 38,
             decoration: BoxDecoration(
-              color: const Color(0xFF141C28),
+              color: AppColors.screenNavyChip,
               borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: const Color(0xFF1E2A3A)),
+              border: Border.all(color: AppColors.screenNavyBorderAlt),
             ),
             child: Icon(
               Icons.tune_rounded,
@@ -239,9 +239,9 @@ class _ScheduleScreenState extends State<ScheduleScreen>
       margin: const EdgeInsets.fromLTRB(16, 0, 16, 12),
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: const Color(0xFF0F1520),
+        color: AppColors.screenNavySurface,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: const Color(0xFF1A2234)),
+        border: Border.all(color: AppColors.screenNavyBorder),
       ),
       child: TabBar(
         controller: _tabController,
@@ -292,7 +292,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
                         padding: const EdgeInsets.symmetric(
                             horizontal: 5, vertical: 1),
                         decoration: BoxDecoration(
-                          color: const Color(0xFFE53935),
+                          color: AppColors.live,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Text(
@@ -358,7 +358,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
 
     return RefreshIndicator(
       color: AppColors.primary,
-      backgroundColor: const Color(0xFF0F1520),
+      backgroundColor: AppColors.screenNavySurface,
       onRefresh: () =>
           provider.fetchMatchSchedules('international', forceRefresh: true),
       child: ListView.builder(
@@ -402,7 +402,7 @@ class _ScheduleScreenState extends State<ScheduleScreen>
     }
     return RefreshIndicator(
       color: AppColors.primary,
-      backgroundColor: const Color(0xFF0F1520),
+      backgroundColor: AppColors.screenNavySurface,
       onRefresh: () =>
           context.read<MatchProvider>().fetchMatches(forceRefresh: true),
       child: ListView.builder(
@@ -428,11 +428,11 @@ class _ScheduleScreenState extends State<ScheduleScreen>
             width: 80,
             height: 80,
             decoration: BoxDecoration(
-              color: const Color(0xFF0F1520),
+              color: AppColors.screenNavySurface,
               shape: BoxShape.circle,
-              border: Border.all(color: const Color(0xFF1A2234)),
+              border: Border.all(color: AppColors.screenNavyBorder),
             ),
-            child: Icon(icon, size: 36, color: const Color(0xFF2A3550)),
+            child: Icon(icon, size: 36, color: AppColors.screenNavyIcon),
           ),
           const SizedBox(height: 18),
           Text(
@@ -527,12 +527,12 @@ class _EnhancedScheduleCard extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: 10),
       decoration: BoxDecoration(
-        color: const Color(0xFF0D1420),
+        color: AppColors.screenNavyCard,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: const Color(0xFF1A2234)),
+        border: Border.all(color: AppColors.screenNavyBorder),
         boxShadow: const [
           BoxShadow(
-            color: Color(0x18000000),
+            color: AppColors.shadowMedium,
             blurRadius: 12,
             offset: Offset(0, 4),
           ),
@@ -602,18 +602,18 @@ class _EnhancedMatchCardState extends State<_EnhancedMatchCard>
         child: Container(
           margin: const EdgeInsets.only(bottom: 10),
           decoration: BoxDecoration(
-            color: const Color(0xFF0D1420),
+            color: AppColors.screenNavyCard,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
               color: widget.isLive
-                  ? const Color(0xFFE53935).withOpacity(0.25)
-                  : const Color(0xFF1A2234),
+                  ? AppColors.live.withOpacity(0.25)
+                  : AppColors.screenNavyBorder,
             ),
             boxShadow: [
               BoxShadow(
                 color: widget.isLive
-                    ? const Color(0xFFE53935).withOpacity(0.06)
-                    : const Color(0x14000000),
+                    ? AppColors.live.withOpacity(0.06)
+                    : AppColors.shadowSoft,
                 blurRadius: 14,
                 offset: const Offset(0, 4),
               ),
@@ -635,8 +635,8 @@ class _EnhancedMatchCardState extends State<_EnhancedMatchCard>
                       decoration: const BoxDecoration(
                         gradient: LinearGradient(
                           colors: [
-                            Color(0xFFE53935),
-                            Color(0xFFFF7043),
+                            AppColors.live,
+                            AppColors.liveAccent,
                           ],
                         ),
                       ),

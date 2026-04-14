@@ -71,13 +71,25 @@ class TeamCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              Text(
-                team.name,
-                style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: AppColors.textPrimary),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8),
+                child: Text(
+                  team.name,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                    color: AppColors.textPrimary,
+                  ),
+                ),
               ),
               const SizedBox(height: 4),
               Text(
                 team.code,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: const TextStyle(
                   color: AppColors.primary,
                   fontWeight: FontWeight.bold,

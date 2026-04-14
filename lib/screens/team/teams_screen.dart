@@ -24,10 +24,10 @@ class _TeamsScreenState extends State<TeamsScreen>
 
   static const _filters = [
     _Filter('all',        'All Teams',    Icons.grid_view_rounded,       AppColors.primary),
-    _Filter('men',        'Men',          Icons.person_rounded,          Color(0xFF1565C0)),
-    _Filter('women',      'Women',        Icons.star_rounded,            Color(0xFFAD1457)),
-    _Filter('associate',  'Associate',    Icons.language_rounded,        Color(0xFF2E7D32)),
-    _Filter('u19',        'U-19',         Icons.school_rounded,          Color(0xFF6A1B9A)),
+    _Filter('men',        'Men',          Icons.person_rounded,          AppColors.formatOdi),
+    _Filter('women',      'Women',        Icons.star_rounded,            AppColors.categoryWomen),
+    _Filter('associate',  'Associate',    Icons.language_rounded,        AppColors.categoryDomestic),
+    _Filter('u19',        'U-19',         Icons.school_rounded,          AppColors.formatT20),
   ];
 
   @override
@@ -151,7 +151,7 @@ class _TeamsScreenState extends State<TeamsScreen>
           20, MediaQuery.of(context).padding.top + 14, 20, 14),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF0A1020), AppColors.background],
+          colors: [AppColors.screenNavyHeader, AppColors.background],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -176,30 +176,36 @@ class _TeamsScreenState extends State<TeamsScreen>
           ),
           const SizedBox(width: 14),
 
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: const [
-              Text(
-                'CRICKET TEAMS',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.4,
+          const Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'CRICKET TEAMS',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.4,
+                  ),
                 ),
-              ),
-              Text(
-                'International & Associate',
-                style: TextStyle(
-                  color: AppColors.textMuted,
-                  fontSize: 11,
-                  letterSpacing: 0.2,
+                Text(
+                  'International & Associate',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 11,
+                    letterSpacing: 0.2,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
 
-          const Spacer(),
+          const SizedBox(width: 12),
 
           // Team count
           if (!provider.isLoading && provider.teams.isNotEmpty)
@@ -474,7 +480,7 @@ class _TeamsScreenState extends State<TeamsScreen>
                     horizontal: 28, vertical: 13),
                 decoration: BoxDecoration(
                   gradient: const LinearGradient(
-                    colors: [Color(0xFFFFB300), AppColors.primary],
+                    colors: [AppColors.primaryLight, AppColors.primary],
                   ),
                   borderRadius: BorderRadius.circular(30),
                   boxShadow: [
@@ -641,14 +647,14 @@ class _SectionHeader extends StatelessWidget {
   Color _sectionColor(String t) {
     final lower = t.toLowerCase();
     if (lower.contains('men') && !lower.contains('women')) {
-      return const Color(0xFF1565C0);
+      return AppColors.formatOdi;
     }
-    if (lower.contains('women')) return const Color(0xFFAD1457);
+    if (lower.contains('women')) return AppColors.categoryWomen;
     if (lower.contains('associate') || lower.contains('affiliate')) {
-      return const Color(0xFF2E7D32);
+      return AppColors.categoryDomestic;
     }
     if (lower.contains('u19') || lower.contains('under')) {
-      return const Color(0xFF6A1B9A);
+      return AppColors.formatT20;
     }
     return AppColors.primary;
   }

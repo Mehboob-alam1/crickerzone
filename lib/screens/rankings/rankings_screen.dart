@@ -21,9 +21,9 @@ class _RankingsScreenState extends State<RankingsScreen>
   late AnimationController _shimmerCtrl;
 
   static const _formats = [
-    _FormatItem('test', 'TEST', Color(0xFF8D1B2A)),
-    _FormatItem('odi', 'ODI', Color(0xFF1565C0)),
-    _FormatItem('t20', 'T20', Color(0xFF6A1B9A)),
+    _FormatItem('test', 'TEST', AppColors.formatTest),
+    _FormatItem('odi', 'ODI', AppColors.formatOdi),
+    _FormatItem('t20', 'T20', AppColors.formatT20),
   ];
 
   static const _tabs = [
@@ -66,9 +66,9 @@ class _RankingsScreenState extends State<RankingsScreen>
 
   Color get _formatColor {
     switch (_currentFormat) {
-      case 'test': return const Color(0xFF8D1B2A);
-      case 't20':  return const Color(0xFF6A1B9A);
-      default:     return const Color(0xFF1565C0);
+      case 'test': return AppColors.formatTest;
+      case 't20':  return AppColors.formatT20;
+      default:     return AppColors.formatOdi;
     }
   }
 
@@ -435,8 +435,8 @@ class _RankingsScreenState extends State<RankingsScreen>
                           gradient: LinearGradient(
                             colors: isFirst
                                 ? [
-                              const Color(0xFFFFD700),
-                              const Color(0xFFFFA000),
+                              AppColors.gold,
+                              AppColors.primary,
                             ]
                                 : [
                               AppColors.surface,
@@ -445,7 +445,7 @@ class _RankingsScreenState extends State<RankingsScreen>
                           ),
                           border: Border.all(
                             color: isFirst
-                                ? const Color(0xFFFFD700)
+                                ? AppColors.gold
                                 : AppColors.textPrimary.withOpacity(0.12),
                             width: isFirst ? 2.5 : 1.5,
                           ),
@@ -486,7 +486,7 @@ class _RankingsScreenState extends State<RankingsScreen>
                           item.rating!,
                           style: TextStyle(
                             color: isFirst
-                                ? const Color(0xFFFFD700)
+                                ? AppColors.gold
                                 : AppColors.textMuted,
                             fontSize: 11,
                             fontWeight: FontWeight.w600,
@@ -502,8 +502,8 @@ class _RankingsScreenState extends State<RankingsScreen>
                           gradient: LinearGradient(
                             colors: isFirst
                                 ? [
-                              const Color(0xFFFFD700).withOpacity(0.5),
-                              const Color(0xFFFFD700).withOpacity(0.15),
+                              AppColors.gold.withOpacity(0.5),
+                              AppColors.gold.withOpacity(0.15),
                             ]
                                 : [
                               _formatColor.withOpacity(0.25),
@@ -517,7 +517,7 @@ class _RankingsScreenState extends State<RankingsScreen>
                           ),
                           border: Border.all(
                             color: isFirst
-                                ? const Color(0xFFFFD700).withOpacity(0.30)
+                                ? AppColors.gold.withOpacity(0.30)
                                 : _formatColor.withOpacity(0.18),
                           ),
                         ),
@@ -526,7 +526,7 @@ class _RankingsScreenState extends State<RankingsScreen>
                             '#$rank',
                             style: TextStyle(
                               color: isFirst
-                                  ? const Color(0xFFFFD700)
+                                  ? AppColors.gold
                                   : _formatColor,
                               fontSize: 16,
                               fontWeight: FontWeight.w900,
@@ -580,13 +580,13 @@ class _RankingsScreenState extends State<RankingsScreen>
               margin: const EdgeInsets.only(bottom: 16),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFF8D1B2A), Color(0xFF4A0E14)],
+                  colors: [AppColors.formatTest, AppColors.formatTestDark],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                    color: const Color(0xFF8D1B2A).withOpacity(0.5)),
+                    color: AppColors.formatTest.withOpacity(0.5)),
               ),
               child: Row(
                 children: [
@@ -608,7 +608,7 @@ class _RankingsScreenState extends State<RankingsScreen>
                       Text(
                         'Current cycle standings',
                         style: TextStyle(
-                          color: Color(0xFFECACB4),
+                          color: AppColors.wtcSubtitle,
                           fontSize: 11,
                         ),
                       ),
@@ -675,7 +675,7 @@ class _RankingsScreenState extends State<RankingsScreen>
                         return TableRow(
                           decoration: BoxDecoration(
                             color: isTop2
-                                ? const Color(0xFF8D1B2A).withOpacity(0.08)
+                                ? AppColors.formatTest.withOpacity(0.08)
                                 : rowIdx.isEven
                                 ? AppColors.surface
                                 : AppColors.background,
@@ -713,7 +713,7 @@ class _RankingsScreenState extends State<RankingsScreen>
                                 style: TextStyle(
                                   color: isPct
                                       ? (isTop2
-                                      ? const Color(0xFFFFD700)
+                                      ? AppColors.gold
                                       : AppColors.textSecondary)
                                       : AppColors.textPrimary,
                                   fontSize: 12,

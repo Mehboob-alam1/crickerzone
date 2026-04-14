@@ -51,7 +51,7 @@ class _NewsScreenState extends State<NewsScreen>
       builder: (ctx) {
         return Container(
           decoration: const BoxDecoration(
-            color: Color(0xFF1A1714),
+            color: AppColors.surfaceInset,
             borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
           ),
           child: SafeArea(
@@ -158,13 +158,13 @@ class _NewsScreenState extends State<NewsScreen>
   }
 
   List<Color> _catColors() => [
-    const Color(0xFFFFA000),
-    const Color(0xFF1565C0),
-    const Color(0xFF6A1B9A),
-    const Color(0xFF2E7D32),
-    const Color(0xFFAD1457),
-    const Color(0xFF00695C),
-    const Color(0xFF37474F),
+    AppColors.primary,
+    AppColors.formatOdi,
+    AppColors.formatT20,
+    AppColors.categoryDomestic,
+    AppColors.categoryWomen,
+    AppColors.categoryAbout,
+    AppColors.categoryNeutral,
   ];
 
   IconData _catIcon(String name) {
@@ -222,7 +222,7 @@ class _NewsScreenState extends State<NewsScreen>
           20, MediaQuery.of(context).padding.top + 14, 20, 14),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF1A0B00), AppColors.background],
+          colors: [AppColors.screenWarmHeaderSoft, AppColors.background],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -553,16 +553,16 @@ class _FeaturedNewsCard extends StatelessWidget {
                   imageUrl: news.image as String,
                   fit: BoxFit.cover,
                   placeholder: (_, __) => Container(
-                      color: const Color(0xFF1A1714)),
+                      color: AppColors.surfaceInset),
                   errorWidget: (_, __, ___) => Container(
-                    color: const Color(0xFF1A1714),
+                    color: AppColors.surfaceInset,
                     child: const Icon(Icons.article_outlined,
                         color: AppColors.textMuted, size: 48),
                   ),
                 )
               else
                 Container(
-                  color: const Color(0xFF1A1714),
+                  color: AppColors.surfaceInset,
                   child: const Icon(Icons.article_outlined,
                       color: AppColors.textMuted, size: 48),
                 ),
@@ -602,7 +602,7 @@ class _FeaturedNewsCard extends StatelessWidget {
                           decoration: BoxDecoration(
                             gradient: const LinearGradient(
                               colors: [
-                                Color(0xFFFFB300),
+                                AppColors.primaryLight,
                                 AppColors.primary
                               ],
                             ),

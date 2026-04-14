@@ -189,8 +189,8 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
         gradient: LinearGradient(
           colors: [
             isLive
-                ? const Color(0xFF1A0600)
-                : const Color(0xFF0A1020),
+                ? AppColors.screenWarmHeaderLive
+                : AppColors.screenNavyHeader,
             AppColors.background,
           ],
           begin: Alignment.topCenter,
@@ -226,11 +226,11 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFE53935)
+                      color: AppColors.live
                           .withOpacity(0.10 + _pulseAnim.value * 0.07),
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(
-                        color: const Color(0xFFE53935)
+                        color: AppColors.live
                             .withOpacity(0.32 + _pulseAnim.value * 0.2),
                       ),
                     ),
@@ -241,7 +241,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
                           width: 5,
                           height: 5,
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE53935).withOpacity(
+                            color: AppColors.live.withOpacity(
                                 0.6 + _pulseAnim.value * 0.4),
                             shape: BoxShape.circle,
                           ),
@@ -249,7 +249,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
                         const SizedBox(width: 5),
                         const Text('LIVE',
                             style: TextStyle(
-                                color: Color(0xFFE53935),
+                                color: AppColors.live,
                                 fontSize: 9,
                                 fontWeight: FontWeight.w800,
                                 letterSpacing: 1)),
@@ -422,12 +422,12 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
                   horizontal: 14, vertical: 6),
               decoration: BoxDecoration(
                 color: isLive
-                    ? const Color(0xFFE53935).withOpacity(0.08)
+                    ? AppColors.live.withOpacity(0.08)
                     : AppColors.surface.withOpacity(0.5),
                 borderRadius: BorderRadius.circular(8),
                 border: Border.all(
                   color: isLive
-                      ? const Color(0xFFE53935).withOpacity(0.20)
+                      ? AppColors.live.withOpacity(0.20)
                       : Colors.white.withOpacity(0.06),
                 ),
               ),
@@ -436,7 +436,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   color: isLive
-                      ? const Color(0xFFE53935)
+                      ? AppColors.live
                       : AppColors.textSecondary,
                   fontSize: 11,
                   fontWeight: FontWeight.w600,
@@ -467,7 +467,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
         padding: EdgeInsets.zero,
         indicator: BoxDecoration(
           gradient: const LinearGradient(
-            colors: [Color(0xFFFFB300), AppColors.primary],
+            colors: [AppColors.primaryLight, AppColors.primary],
           ),
           borderRadius: BorderRadius.circular(10),
           boxShadow: [
@@ -572,9 +572,9 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
         children: [
           Expanded(child: _statPill('CRR', crr, AppColors.primary)),
           Container(width: 1, height: 30, color: Colors.white10),
-          Expanded(child: _statPill('RRR', rrr, const Color(0xFFE53935))),
+          Expanded(child: _statPill('RRR', rrr, AppColors.live)),
           Container(width: 1, height: 30, color: Colors.white10),
-          Expanded(child: _statPill('Target', target, const Color(0xFF42A5F5))),
+          Expanded(child: _statPill('Target', target, AppColors.chartLine2)),
         ],
       ),
     );
@@ -671,11 +671,11 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
   }
 
   Color _ballColor(String b) {
-    if (b == 'W') return const Color(0xFFE53935);
-    if (b == '4') return const Color(0xFF00E676);
-    if (b == '6') return const Color(0xFFFFD600);
+    if (b == 'W') return AppColors.live;
+    if (b == '4') return AppColors.four;
+    if (b == '6') return AppColors.six;
     if (b == '0') return AppColors.textMuted;
-    if (b == 'Wd' || b == 'Nb') return const Color(0xFFFF8F00);
+    if (b == 'Wd' || b == 'Nb') return AppColors.extra;
     return AppColors.textSecondary;
   }
 
@@ -773,11 +773,11 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
                 ),
                 Expanded(
                   child: _ballStat(b['fours']?.toString() ?? '0',
-                      const Color(0xFF00E676)),
+                      AppColors.four),
                 ),
                 Expanded(
                   child: _ballStat(b['sixes']?.toString() ?? '0',
-                      const Color(0xFFFFD600)),
+                      AppColors.six),
                 ),
                 Expanded(
                   child: Text(
@@ -825,7 +825,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
                   width: 4,
                   height: 14,
                   decoration: BoxDecoration(
-                    color: const Color(0xFF42A5F5),
+                    color: AppColors.chartLine2,
                     borderRadius: BorderRadius.circular(2),
                   ),
                 ),
@@ -867,7 +867,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
                     '${b['wickets']}-${b['runs']}',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
-                        color: Color(0xFFE53935),
+                        color: AppColors.live,
                         fontSize: 12,
                         fontWeight: FontWeight.w700),
                   ),
@@ -1009,7 +1009,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
                 ],
 
                 if (bowlKeys.isNotEmpty) ...[
-                  _sectionLabel('Bowling', const Color(0xFF42A5F5)),
+                  _sectionLabel('Bowling', AppColors.chartLine2),
                   _bowlHeaderRow(),
                   ...bowlKeys.map((k) {
                     final row = Map<String, dynamic>.from(
@@ -1098,7 +1098,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
             child: Text(r['fours']?.toString() ?? '0',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                    color: Color(0xFF00E676),
+                    color: AppColors.four,
                     fontSize: 12,
                     fontWeight: FontWeight.w700)),
           ),
@@ -1106,7 +1106,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
             child: Text(r['sixes']?.toString() ?? '0',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                    color: Color(0xFFFFD600),
+                    color: AppColors.six,
                     fontSize: 12,
                     fontWeight: FontWeight.w700)),
           ),
@@ -1172,7 +1172,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
             child: Text(r['wickets']?.toString() ?? '0',
                 textAlign: TextAlign.center,
                 style: const TextStyle(
-                    color: Color(0xFFE53935),
+                    color: AppColors.live,
                     fontSize: 12,
                     fontWeight: FontWeight.w800)),
           ),
@@ -1216,9 +1216,9 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
             item['event']?.toString() == 'SIX' || item['runs'] == 6;
 
         Color accentColor = AppColors.textMuted;
-        if (isWkt) accentColor = const Color(0xFFE53935);
-        else if (isSix) accentColor = const Color(0xFFFFD600);
-        else if (isFour) accentColor = const Color(0xFF00E676);
+        if (isWkt) accentColor = AppColors.live;
+        else if (isSix) accentColor = AppColors.six;
+        else if (isFour) accentColor = AppColors.four;
 
         return FadeInRight(
           delay: Duration(milliseconds: 40 * (i % 10)),
@@ -1227,20 +1227,20 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: isWkt
-                  ? const Color(0xFFE53935).withOpacity(0.06)
+                  ? AppColors.live.withOpacity(0.06)
                   : isSix
-                  ? const Color(0xFFFFD600).withOpacity(0.05)
+                  ? AppColors.six.withOpacity(0.05)
                   : isFour
-                  ? const Color(0xFF00E676).withOpacity(0.05)
+                  ? AppColors.four.withOpacity(0.05)
                   : AppColors.surface,
               borderRadius: BorderRadius.circular(14),
               border: Border.all(
                 color: isWkt
-                    ? const Color(0xFFE53935).withOpacity(0.22)
+                    ? AppColors.live.withOpacity(0.22)
                     : isSix
-                    ? const Color(0xFFFFD600).withOpacity(0.18)
+                    ? AppColors.six.withOpacity(0.18)
                     : isFour
-                    ? const Color(0xFF00E676).withOpacity(0.18)
+                    ? AppColors.four.withOpacity(0.18)
                     : Colors.white.withOpacity(0.05),
               ),
             ),
@@ -1268,7 +1268,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
                           padding: const EdgeInsets.symmetric(
                               horizontal: 7, vertical: 2),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFE53935),
+                            color: AppColors.live,
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: const Text('WICKET',
@@ -1284,7 +1284,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
                           padding: const EdgeInsets.symmetric(
                               horizontal: 7, vertical: 2),
                           decoration: BoxDecoration(
-                            color: const Color(0xFFFFD600),
+                            color: AppColors.six,
                             borderRadius: BorderRadius.circular(5),
                           ),
                           child: const Text('SIX',
@@ -1300,7 +1300,7 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 7, vertical: 2),
                             decoration: BoxDecoration(
-                              color: const Color(0xFF00E676),
+                              color: AppColors.four,
                               borderRadius: BorderRadius.circular(5),
                             ),
                             child: const Text('FOUR',
@@ -1470,12 +1470,12 @@ class _MatchDetailScreenState extends State<MatchDetailScreen>
               padding:
               const EdgeInsets.symmetric(horizontal: 4, vertical: 1),
               decoration: BoxDecoration(
-                color: const Color(0xFF42A5F5).withOpacity(0.12),
+                color: AppColors.chartLine2.withOpacity(0.12),
                 borderRadius: BorderRadius.circular(4),
               ),
               child: const Text('WK',
                   style: TextStyle(
-                      color: Color(0xFF42A5F5),
+                      color: AppColors.chartLine2,
                       fontSize: 9,
                       fontWeight: FontWeight.w900)),
             ),

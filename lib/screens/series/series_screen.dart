@@ -23,11 +23,11 @@ class _SeriesScreenState extends State<SeriesScreen>
 
   static const _filters = [
     _Filter('all',       'All',         Icons.grid_view_rounded,          AppColors.primary),
-    _Filter('test',      'Test',        Icons.sports_cricket_rounded,      Color(0xFF8D1B2A)),
-    _Filter('odi',       'ODI',         Icons.flag_rounded,                Color(0xFF1565C0)),
-    _Filter('t20',       'T20',         Icons.bolt_rounded,                Color(0xFF6A1B9A)),
-    _Filter('domestic',  'Domestic',    Icons.stadium_rounded,             Color(0xFF2E7D32)),
-    _Filter('women',     'Women',       Icons.star_rounded,                Color(0xFFAD1457)),
+    _Filter('test',      'Test',        Icons.sports_cricket_rounded,      AppColors.formatTest),
+    _Filter('odi',       'ODI',         Icons.flag_rounded,                AppColors.formatOdi),
+    _Filter('t20',       'T20',         Icons.bolt_rounded,                AppColors.formatT20),
+    _Filter('domestic',  'Domestic',    Icons.stadium_rounded,             AppColors.categoryDomestic),
+    _Filter('women',     'Women',       Icons.star_rounded,                AppColors.categoryWomen),
   ];
 
   @override
@@ -151,7 +151,7 @@ class _SeriesScreenState extends State<SeriesScreen>
           20, MediaQuery.of(context).padding.top + 16, 20, 16),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF1A1200), AppColors.background],
+          colors: [AppColors.screenWarmHeaderDeep, AppColors.background],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -183,7 +183,7 @@ class _SeriesScreenState extends State<SeriesScreen>
             height: 44,
             decoration: BoxDecoration(
               gradient: const LinearGradient(
-                colors: [Color(0xFFFFB300), Color(0xFFFFA000)],
+                colors: [AppColors.primaryLight, AppColors.primary],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -201,29 +201,35 @@ class _SeriesScreenState extends State<SeriesScreen>
             ),
           ),
           const SizedBox(width: 14),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'CRICKET SERIES',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 19,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.4,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'CRICKET SERIES',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 19,
+                    fontWeight: FontWeight.w900,
+                    letterSpacing: 1.4,
+                  ),
                 ),
-              ),
-              Text(
-                'International & Domestic',
-                style: TextStyle(
-                  color: AppColors.textMuted,
-                  fontSize: 11,
-                  letterSpacing: 0.3,
+                Text(
+                  'International & Domestic',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 11,
+                    letterSpacing: 0.3,
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          const Spacer(),
+          const SizedBox(width: 12),
           Consumer<SeriesProvider>(
             builder: (_, provider, __) => Container(
               padding:
@@ -456,11 +462,11 @@ class _SeriesCard extends StatelessWidget {
 
   Color _typeColor(String type) {
     final t = type.toLowerCase();
-    if (t.contains('test'))     return const Color(0xFF8D1B2A);
-    if (t.contains('odi'))      return const Color(0xFF1565C0);
-    if (t.contains('t20'))      return const Color(0xFF6A1B9A);
-    if (t.contains('women'))    return const Color(0xFFAD1457);
-    if (t.contains('domestic')) return const Color(0xFF2E7D32);
+    if (t.contains('test'))     return AppColors.formatTest;
+    if (t.contains('odi'))      return AppColors.formatOdi;
+    if (t.contains('t20'))      return AppColors.formatT20;
+    if (t.contains('women'))    return AppColors.categoryWomen;
+    if (t.contains('domestic')) return AppColors.categoryDomestic;
     return AppColors.primary;
   }
 
@@ -576,20 +582,21 @@ class _SeriesCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                           const SizedBox(height: 6),
-                          Row(
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 6,
                             children: [
-                              // Format pill
                               Container(
-                                padding:
-                                const EdgeInsets.symmetric(
-                                    horizontal: 7, vertical: 2),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 7,
+                                  vertical: 2,
+                                ),
                                 decoration: BoxDecoration(
                                   color: color.withOpacity(0.12),
-                                  borderRadius:
-                                  BorderRadius.circular(5),
+                                  borderRadius: BorderRadius.circular(5),
                                   border: Border.all(
-                                      color:
-                                      color.withOpacity(0.28)),
+                                    color: color.withOpacity(0.28),
+                                  ),
                                 ),
                                 child: Text(
                                   typeShort,
@@ -601,18 +608,15 @@ class _SeriesCard extends StatelessWidget {
                                   ),
                                 ),
                               ),
-
-                              // Match count
-                              if (matchCount != null) ...[
-                                const SizedBox(width: 6),
+                              if (matchCount != null)
                                 Container(
-                                  padding:
-                                  const EdgeInsets.symmetric(
-                                      horizontal: 7, vertical: 2),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 7,
+                                    vertical: 2,
+                                  ),
                                   decoration: BoxDecoration(
                                     color: AppColors.cardGrey,
-                                    borderRadius:
-                                    BorderRadius.circular(5),
+                                    borderRadius: BorderRadius.circular(5),
                                   ),
                                   child: Text(
                                     '$matchCount matches',
@@ -623,32 +627,26 @@ class _SeriesCard extends StatelessWidget {
                                     ),
                                   ),
                                 ),
-                              ],
-
-                              // Date range
-                              if (hasDates) ...[
-                                const SizedBox(width: 6),
-                                Expanded(
-                                  child: Text(
-                                    [
-                                      if (startDate != null)
-                                        startDate,
-                                      if (endDate != null) endDate,
-                                    ].join(' – '),
-                                    style: TextStyle(
-                                      color: AppColors.textMuted,
-                                      fontSize: 9,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
                             ],
                           ),
+                          if (hasDates) ...[
+                            const SizedBox(height: 6),
+                            Text(
+                              [
+                                if (startDate != null) startDate,
+                                if (endDate != null) endDate,
+                              ].join(' – '),
+                              style: TextStyle(
+                                color: AppColors.textMuted,
+                                fontSize: 9,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ],
                       ),
                     ),
-
                     // Chevron
                     Container(
                       width: 30,
@@ -683,3 +681,6 @@ class _Filter {
   final Color color;
   const _Filter(this.key, this.label, this.icon, this.color);
 }
+
+
+

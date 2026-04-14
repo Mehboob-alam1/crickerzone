@@ -293,7 +293,7 @@ class _HomeScreenState extends State<HomeScreen>
           16, MediaQuery.of(context).padding.top + 12, 16, 14),
       decoration: const BoxDecoration(
         gradient: LinearGradient(
-          colors: [Color(0xFF1A0D00), AppColors.background],
+          colors: [AppColors.screenWarmHeader, AppColors.background],
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
         ),
@@ -323,43 +323,47 @@ class _HomeScreenState extends State<HomeScreen>
           const SizedBox(width: 12),
 
           // Logo + app name
-          Row(
-            children: [
-              Container(
-                width: 34,
-                height: 34,
-                decoration: BoxDecoration(
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFFFFB300), AppColors.primary],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                  borderRadius: BorderRadius.circular(10),
-                  boxShadow: [
-                    BoxShadow(
-                      color: AppColors.primary.withOpacity(0.30),
-                      blurRadius: 10,
-                      offset: const Offset(0, 3),
+          Expanded(
+            child: Row(
+              children: [
+                Container(
+                  width: 34,
+                  height: 34,
+                  decoration: BoxDecoration(
+                    gradient: const LinearGradient(
+                      colors: [AppColors.primaryLight, AppColors.primary],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
                     ),
-                  ],
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: AppColors.primary.withOpacity(0.30),
+                        blurRadius: 10,
+                        offset: const Offset(0, 3),
+                      ),
+                    ],
+                  ),
+                  child: const Icon(Icons.sports_cricket_rounded,
+                      color: Colors.black, size: 18),
                 ),
-                child: const Icon(Icons.sports_cricket_rounded,
-                    color: Colors.black, size: 18),
-              ),
-              const SizedBox(width: 9),
-              const Text(
-                'SCORE ZONE',
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                  fontWeight: FontWeight.w900,
-                  letterSpacing: 1.4,
+                const SizedBox(width: 9),
+                const Expanded(
+                  child: Text(
+                    'SCORE ZONE',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w900,
+                      letterSpacing: 1.4,
+                    ),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-
-          const Spacer(),
 
           // Live count pill
           if (provider.liveMatches.isNotEmpty)
@@ -369,11 +373,11 @@ class _HomeScreenState extends State<HomeScreen>
                 padding: const EdgeInsets.symmetric(
                     horizontal: 10, vertical: 5),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE53935)
+                  color: AppColors.live
                       .withOpacity(0.10 + _pulseAnim.value * 0.06),
                   borderRadius: BorderRadius.circular(20),
                   border: Border.all(
-                    color: const Color(0xFFE53935)
+                    color: AppColors.live
                         .withOpacity(0.30 + _pulseAnim.value * 0.20),
                   ),
                 ),
@@ -384,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen>
                       width: 5,
                       height: 5,
                       decoration: BoxDecoration(
-                        color: const Color(0xFFE53935).withOpacity(
+                        color: AppColors.live.withOpacity(
                             0.6 + _pulseAnim.value * 0.4),
                         shape: BoxShape.circle,
                       ),
@@ -393,7 +397,7 @@ class _HomeScreenState extends State<HomeScreen>
                     Text(
                       '${provider.liveMatches.length} LIVE',
                       style: const TextStyle(
-                        color: Color(0xFFE53935),
+                        color: AppColors.live,
                         fontSize: 10,
                         fontWeight: FontWeight.w800,
                         letterSpacing: 0.6,
@@ -434,7 +438,7 @@ class _HomeScreenState extends State<HomeScreen>
                     width: 8,
                     height: 8,
                     decoration: const BoxDecoration(
-                      color: Color(0xFFE53935),
+                      color: AppColors.live,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -469,12 +473,18 @@ class _HomeScreenState extends State<HomeScreen>
               Icon(Icons.search_rounded,
                   color: AppColors.textMuted, size: 18),
               const SizedBox(width: 10),
-              Text(
-                'Search series, teams or players…',
-                style: TextStyle(
-                    color: AppColors.textMuted, fontSize: 13),
+              Expanded(
+                child: Text(
+                  'Search series, teams or players…',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: AppColors.textMuted,
+                    fontSize: 13,
+                  ),
+                ),
               ),
-              const Spacer(),
+              const SizedBox(width: 10),
               Container(
                 padding: const EdgeInsets.symmetric(
                     horizontal: 8, vertical: 3),
@@ -502,24 +512,24 @@ class _HomeScreenState extends State<HomeScreen>
 
   Widget _buildQuickAccess() {
     final categories = [
-      _Cat('Series', Icons.emoji_events_rounded, const Color(0xFFFFA000),
+      _Cat('Series', Icons.emoji_events_rounded, AppColors.primary,
               () => Navigator.push(context,
               MaterialPageRoute(builder: (_) => const SeriesScreen()))),
-      _Cat('Teams', Icons.shield_rounded, const Color(0xFF1565C0),
+      _Cat('Teams', Icons.shield_rounded, AppColors.formatOdi,
               () => Navigator.push(context,
               MaterialPageRoute(builder: (_) => const TeamsScreen()))),
-      _Cat('Players', Icons.person_rounded, const Color(0xFF6A1B9A),
+      _Cat('Players', Icons.person_rounded, AppColors.formatT20,
               () => Navigator.push(context,
               MaterialPageRoute(
                   builder: (_) => const PlayersListScreen()))),
-      _Cat('Rankings', Icons.leaderboard_rounded, const Color(0xFF2E7D32),
+      _Cat('Rankings', Icons.leaderboard_rounded, AppColors.categoryDomestic,
               () => Navigator.push(context,
               MaterialPageRoute(
                   builder: (_) => const RankingsScreen()))),
-      _Cat('News', Icons.newspaper_rounded, const Color(0xFFAD1457),
+      _Cat('News', Icons.newspaper_rounded, AppColors.categoryWomen,
               () => Navigator.push(context,
               MaterialPageRoute(builder: (_) => const NewsScreen()))),
-      _Cat('About', Icons.info_outline_rounded, const Color(0xFF00695C),
+      _Cat('About', Icons.info_outline_rounded, AppColors.categoryAbout,
               () => Navigator.push(context,
               MaterialPageRoute(builder: (_) => const AboutScreen()))),
     ];
@@ -597,7 +607,7 @@ class _HomeScreenState extends State<HomeScreen>
                 20, MediaQuery.of(context).padding.top + 20, 20, 24),
             decoration: const BoxDecoration(
               gradient: LinearGradient(
-                colors: [Color(0xFF1C0E00), AppColors.surface],
+                colors: [AppColors.screenWarmHeaderAlt, AppColors.surface],
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
               ),
@@ -613,7 +623,7 @@ class _HomeScreenState extends State<HomeScreen>
                     height: 64,
                     decoration: BoxDecoration(
                       gradient: const LinearGradient(
-                        colors: [Color(0xFFFFB300), AppColors.primary],
+                        colors: [AppColors.primaryLight, AppColors.primary],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -668,7 +678,7 @@ class _HomeScreenState extends State<HomeScreen>
                 _DrawerTile(
                   icon: Icons.emoji_events_rounded,
                   label: 'Series',
-                  color: const Color(0xFFFFA000),
+                  color: AppColors.primary,
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(context,
@@ -679,7 +689,7 @@ class _HomeScreenState extends State<HomeScreen>
                 _DrawerTile(
                   icon: Icons.shield_rounded,
                   label: 'Teams',
-                  color: const Color(0xFF1565C0),
+                  color: AppColors.formatOdi,
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(context,
@@ -690,7 +700,7 @@ class _HomeScreenState extends State<HomeScreen>
                 _DrawerTile(
                   icon: Icons.person_rounded,
                   label: 'Players',
-                  color: const Color(0xFF6A1B9A),
+                  color: AppColors.formatT20,
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(context,
@@ -701,7 +711,7 @@ class _HomeScreenState extends State<HomeScreen>
                 _DrawerTile(
                   icon: Icons.leaderboard_rounded,
                   label: 'Rankings',
-                  color: const Color(0xFF2E7D32),
+                  color: AppColors.categoryDomestic,
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(context,
@@ -712,7 +722,7 @@ class _HomeScreenState extends State<HomeScreen>
                 _DrawerTile(
                   icon: Icons.newspaper_rounded,
                   label: 'News',
-                  color: const Color(0xFFAD1457),
+                  color: AppColors.categoryWomen,
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(context,
@@ -737,7 +747,7 @@ class _HomeScreenState extends State<HomeScreen>
                 _DrawerTile(
                   icon: Icons.info_outline_rounded,
                   label: 'About Us',
-                  color: const Color(0xFF00695C),
+                  color: AppColors.categoryAbout,
                   onTap: () {
                     Navigator.pop(context);
                     Navigator.push(context,
@@ -803,12 +813,12 @@ class _SectionLabel extends StatelessWidget {
                 height: 8,
                 margin: const EdgeInsets.only(right: 8),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFE53935)
+                  color: AppColors.live
                       .withOpacity(0.6 + pulseAnim!.value * 0.4),
                   shape: BoxShape.circle,
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFFE53935)
+                      color: AppColors.live
                           .withOpacity(0.4 + pulseAnim!.value * 0.3),
                       blurRadius: 6,
                       spreadRadius: 1,
@@ -820,7 +830,7 @@ class _SectionLabel extends StatelessWidget {
           Text(
             title,
             style: TextStyle(
-              color: isLive ? const Color(0xFFE53935) : Colors.white,
+              color: isLive ? AppColors.live : Colors.white,
               fontSize: 15,
               fontWeight: FontWeight.w800,
               letterSpacing: 0.3,
@@ -831,7 +841,7 @@ class _SectionLabel extends StatelessWidget {
             padding:
             const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
             decoration: BoxDecoration(
-              color: (isLive ? const Color(0xFFE53935) : AppColors.primary)
+              color: (isLive ? AppColors.live : AppColors.primary)
                   .withOpacity(0.12),
               borderRadius: BorderRadius.circular(6),
             ),
@@ -839,7 +849,7 @@ class _SectionLabel extends StatelessWidget {
               '$count',
               style: TextStyle(
                 color: isLive
-                    ? const Color(0xFFE53935)
+                    ? AppColors.live
                     : AppColors.primary,
                 fontSize: 10,
                 fontWeight: FontWeight.w800,
@@ -852,16 +862,16 @@ class _SectionLabel extends StatelessWidget {
               padding:
               const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
               decoration: BoxDecoration(
-                color: const Color(0xFFE53935).withOpacity(0.10),
+                color: AppColors.live.withOpacity(0.10),
                 borderRadius: BorderRadius.circular(6),
                 border: Border.all(
                     color:
-                    const Color(0xFFE53935).withOpacity(0.25)),
+                    AppColors.live.withOpacity(0.25)),
               ),
               child: const Text(
                 'LIVE',
                 style: TextStyle(
-                  color: Color(0xFFE53935),
+                  color: AppColors.live,
                   fontSize: 9,
                   fontWeight: FontWeight.w800,
                   letterSpacing: 1,
@@ -1188,7 +1198,7 @@ class _NoMatchesState extends StatelessWidget {
                   horizontal: 28, vertical: 13),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
-                  colors: [Color(0xFFFFB300), AppColors.primary],
+                  colors: [AppColors.primaryLight, AppColors.primary],
                 ),
                 borderRadius: BorderRadius.circular(30),
                 boxShadow: [
@@ -1244,3 +1254,5 @@ class _NoMatchesState extends StatelessWidget {
     );
   }
 }
+
+
