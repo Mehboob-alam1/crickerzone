@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "819894194746",
+    "project_id": "cricketzone-e9d00",
+    "storage_bucket": "cricketzone-e9d00.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:819894194746:android:06235cec711c1cd4ee9b03",
+        "android_client_info": {
+          "package_name": "com.example.score_zone"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCUWBcnX1CH5i_1AbBIUy5mXqXWJBGsY_8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
