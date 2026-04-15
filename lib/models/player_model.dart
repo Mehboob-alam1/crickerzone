@@ -9,6 +9,8 @@ class PlayerModel {
   final String? batStyle;
   final String? bowlStyle;
   final String? team;
+  final String? country;
+  final String? rating;
   final String runs;
   final String average;
   final Map<String, dynamic>? stats;
@@ -27,6 +29,8 @@ class PlayerModel {
     this.batStyle,
     this.bowlStyle,
     this.team,
+    this.country,
+    this.rating,
     this.runs = 'N/A',
     this.average = 'N/A',
     this.stats,
@@ -46,6 +50,8 @@ class PlayerModel {
   factory PlayerModel.fromJson(Map<String, dynamic> json) {
     final roleField = json['role']?.toString() ?? '';
     final teamName = json['teamName']?.toString();
+    final intlTeam = json['intlTeam']?.toString();
+    final country = json['country']?.toString() ?? intlTeam ?? teamName;
 
     return PlayerModel(
       id: json['id']?.toString() ?? json['playerId']?.toString() ?? '',
@@ -59,7 +65,9 @@ class PlayerModel {
       height: json['height']?.toString(),
       batStyle: json['bat']?.toString(),
       bowlStyle: json['bowl']?.toString(),
-      team: json['intlTeam']?.toString() ?? teamName,
+      team: intlTeam ?? teamName,
+      country: country,
+      rating: json['rating']?.toString() ?? json['avg']?.toString(),
       runs: json['runs']?.toString() ?? 'N/A',
       average: json['avg']?.toString() ?? 'N/A',
       bio: json['bio']?.toString(),

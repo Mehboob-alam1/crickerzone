@@ -19,6 +19,11 @@ class PlayerProvider with ChangeNotifier {
   Map<String, dynamic>? get playerBowling => _playerBowling;
   List<dynamic>? get playerCareer => _playerCareer;
 
+  void clearSearch() {
+    _searchResults = [];
+    notifyListeners();
+  }
+
   Future<void> searchPlayers(String name, {bool forceRefresh = false}) async {
     if (_isLoading) return;
     _isLoading = true;
@@ -89,7 +94,7 @@ class PlayerProvider with ChangeNotifier {
     try {
       final bat = await PlayerApi.getPlayerBatting(id, forceRefresh: forceRefresh);
       if (bat is Map) {
-        _playerBatting = Map<String, dynamic>.from(bat as Map);
+        _playerBatting = Map<String, dynamic>.from(bat);
       }
     } catch (e) {
       debugPrint('Batting stats: $e');
@@ -102,7 +107,7 @@ class PlayerProvider with ChangeNotifier {
     try {
       final bowl = await PlayerApi.getPlayerBowling(id, forceRefresh: forceRefresh);
       if (bowl is Map) {
-        _playerBowling = Map<String, dynamic>.from(bowl as Map);
+        _playerBowling = Map<String, dynamic>.from(bowl);
       }
     } catch (e) {
       debugPrint('Bowling stats: $e');
